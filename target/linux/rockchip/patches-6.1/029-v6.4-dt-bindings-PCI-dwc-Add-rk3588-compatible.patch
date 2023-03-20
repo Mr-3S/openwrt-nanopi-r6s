@@ -1,0 +1,33 @@
+From 13803c86e24f5a409406cd428ed0aa69cfcf61f0 Mon Sep 17 00:00:00 2001
+From: Lucas Tanure <lucas.tanure@collabora.com>
+Date: Tue, 14 Mar 2023 13:55:53 +0000
+Subject: [PATCH] dt-bindings: PCI: dwc: Add rk3588 compatible
+
+PCIe for RK3588 is the same as RK3568.
+
+Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20230314135555.44162-2-lucas.tanure@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+index 2be72ae1169f99..24c88942e59e0a 100644
+--- a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+@@ -21,8 +21,12 @@ allOf:
+ 
+ properties:
+   compatible:
+-    items:
++    oneOf:
+       - const: rockchip,rk3568-pcie
++      - items:
++          - enum:
++              - rockchip,rk3588-pcie
++          - const: rockchip,rk3568-pcie
+ 
+   reg:
+     items:

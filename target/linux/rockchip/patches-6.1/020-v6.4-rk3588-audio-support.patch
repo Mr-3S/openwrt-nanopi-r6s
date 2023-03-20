@@ -1,0 +1,152 @@
+From 1024a5b29e90a18530588b3f161e81cf3fae7dcf Mon Sep 17 00:00:00 2001
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Date: Tue, 25 Oct 2022 14:41:29 +0200
+Subject: [PATCH 1/4] ASoC: dt-bindings: rockchip: i2s-tdm: Make grf property
+ optional
+
+Turns out most things don't require the GRF, so making the property
+optional is the obvious move.
+
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20221025124132.399729-2-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+index 6a7c004bef1724..8646cdc692d7f6 100644
+--- a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
++++ b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+@@ -135,7 +135,6 @@ required:
+   - clock-names
+   - resets
+   - reset-names
+-  - rockchip,grf
+   - "#sound-dai-cells"
+ 
+ additionalProperties: false
+
+From d980004e349049a3fcbffc6096d14896f6a122ed Mon Sep 17 00:00:00 2001
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Date: Tue, 25 Oct 2022 14:41:30 +0200
+Subject: [PATCH 2/4] ASoC: rockchip: i2s_tdm: Make the grf property optional
+
+Only IO Multiplex and two TRCM modes need access to the GRF, so
+making it a hard requirement is not a wise idea, as it complicates
+support for newer SoCs which do not do these things.
+
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Link: https://lore.kernel.org/r/20221025124132.399729-3-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ sound/soc/rockchip/rockchip_i2s_tdm.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/sound/soc/rockchip/rockchip_i2s_tdm.c b/sound/soc/rockchip/rockchip_i2s_tdm.c
+index 2550bd2a5e78c5..917f17107891ab 100644
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -756,6 +756,12 @@ static int rockchip_i2s_io_multiplex(struct snd_pcm_substream *substream,
+ 	if (!i2s_tdm->io_multiplex)
+ 		return 0;
+ 
++	if (IS_ERR_OR_NULL(i2s_tdm->grf)) {
++		dev_err(i2s_tdm->dev,
++			"io multiplex not supported for this device\n");
++		return -EINVAL;
++	}
++
+ 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+ 		struct snd_pcm_str *playback_str =
+ 			&substream->pcm->streams[SNDRV_PCM_STREAM_PLAYBACK];
+@@ -1222,6 +1228,12 @@ static int common_soc_init(struct device *dev, u32 addr)
+ 	if (trcm == TRCM_TXRX)
+ 		return 0;
+ 
++	if (IS_ERR_OR_NULL(i2s_tdm->grf)) {
++		dev_err(i2s_tdm->dev,
++			"no grf present but non-txrx TRCM specified\n");
++		return -EINVAL;
++	}
++
+ 	for (i = 0; i < i2s_tdm->soc_data->config_count; i++) {
+ 		if (addr != configs[i].addr)
+ 			continue;
+@@ -1568,10 +1580,6 @@ static int rockchip_i2s_tdm_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	i2s_tdm->grf = syscon_regmap_lookup_by_phandle(node, "rockchip,grf");
+-	if (IS_ERR(i2s_tdm->grf))
+-		return dev_err_probe(i2s_tdm->dev, PTR_ERR(i2s_tdm->grf),
+-				     "Error in rockchip,grf\n");
+-
+ 	i2s_tdm->tx_reset = devm_reset_control_get_optional_exclusive(&pdev->dev,
+ 								      "tx-m");
+ 	if (IS_ERR(i2s_tdm->tx_reset)) {
+
+From 0643fd3669f5c33bab5b05a813459a2d00a83465 Mon Sep 17 00:00:00 2001
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Date: Tue, 25 Oct 2022 14:41:31 +0200
+Subject: [PATCH 3/4] ASoC: dt-bindings: rockchip: i2s-tdm: Add RK3588
+ compatible
+
+This adds the compatible string for the RK3588 SoC.
+
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20221025124132.399729-4-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+index 8646cdc692d7f6..0503f4f3fb1abc 100644
+--- a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
++++ b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+@@ -21,6 +21,7 @@ properties:
+       - rockchip,rk1808-i2s-tdm
+       - rockchip,rk3308-i2s-tdm
+       - rockchip,rk3568-i2s-tdm
++      - rockchip,rk3588-i2s-tdm
+       - rockchip,rv1126-i2s-tdm
+ 
+   reg:
+
+From c619bd4268ff9895760dab303b4eb15ed3d0f7e9 Mon Sep 17 00:00:00 2001
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Date: Tue, 25 Oct 2022 14:41:32 +0200
+Subject: [PATCH 4/4] ASoC: rockchip: i2s_tdm: Add support for RK3588
+
+This adds support for the RK3588 SoC to the I2S/TDM driver.
+
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Link: https://lore.kernel.org/r/20221025124132.399729-5-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ sound/soc/rockchip/rockchip_i2s_tdm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/rockchip/rockchip_i2s_tdm.c b/sound/soc/rockchip/rockchip_i2s_tdm.c
+index 917f17107891ab..08b90ec5cc80a8 100644
+--- a/sound/soc/rockchip/rockchip_i2s_tdm.c
++++ b/sound/soc/rockchip/rockchip_i2s_tdm.c
+@@ -1318,6 +1318,7 @@ static const struct of_device_id rockchip_i2s_tdm_match[] = {
+ 	{ .compatible = "rockchip,rk1808-i2s-tdm", .data = &rk1808_i2s_soc_data },
+ 	{ .compatible = "rockchip,rk3308-i2s-tdm", .data = &rk3308_i2s_soc_data },
+ 	{ .compatible = "rockchip,rk3568-i2s-tdm", .data = &rk3568_i2s_soc_data },
++	{ .compatible = "rockchip,rk3588-i2s-tdm" },
+ 	{ .compatible = "rockchip,rv1126-i2s-tdm", .data = &rv1126_i2s_soc_data },
+ 	{},
+ };
+@@ -1556,7 +1557,7 @@ static int rockchip_i2s_tdm_probe(struct platform_device *pdev)
+ 	i2s_tdm->dev = &pdev->dev;
+ 
+ 	of_id = of_match_device(rockchip_i2s_tdm_match, &pdev->dev);
+-	if (!of_id || !of_id->data)
++	if (!of_id)
+ 		return -EINVAL;
+ 
+ 	spin_lock_init(&i2s_tdm->lock);

@@ -1,0 +1,166 @@
+From patchwork Thu May  4 17:36:16 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13231440
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4227C7EE2D
+	for <linux-rockchip@archiver.kernel.org>;
+ Thu,  4 May 2023 17:36:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=EpR3UjqmNPfzk2Qk0TZdK82Kvy7bM3cicEHVGZZ8ka0=; b=rSrUsso/J2saDW
+	MgVoULBtt7pMHggcsRqWdoByUVQZTiwdPM2mq0J+ytzg+XVQS7T+ZJErHpSa+LOCK9B92bMFqymEn
+	cNbiRLVeTRSVJXZuxgx3vVabgwf75RdwGwcjv/Ef9REgNavS8oX8pmjkkLfBHkg4Ie34gLsI/kS9k
+	gaGVll1YcsoOJ3C4p+KosU4Z8pBZgdtxMpTSu98uCc4CicKLESQRIu1KFUKKmzf51O75Lgvn4fsrt
+	Lr4nebhCO8eDheCtFaN8kfxMGb5LUUoxGXAYbx3SC7AJIE2TIFuC/oNN0aVYmpyqJqItVfg6id2XY
+	T5/aphYmgYv0ivQvFnNg==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsi-008RAu-0a;
+	Thu, 04 May 2023 17:36:40 +0000
+Received: from madras.collabora.co.uk ([46.235.227.172])
+	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsZ-008R1J-1F
+	for linux-rockchip@lists.infradead.org;
+	Thu, 04 May 2023 17:36:35 +0000
+Received: from jupiter.universe (dyndsl-091-248-211-176.ewe-ip-backbone.de
+ [91.248.211.176])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 3F5BE660570C;
+	Thu,  4 May 2023 18:36:25 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1683221785;
+	bh=JRA4rbYQN2WDlDgM+lLQRDDOel1gAU5BBrsIXnna0m4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=QloSqe/jj/e26mZoAG5vmD3/CbwN4VG+cv1oO/+SWmhPrM4xtg2iO3Qk+vpFx5yMy
+	 /qz90hRCC/zMMA8iRWgAJLKvp0iBt/+B9B+hzMYAAu5qXVRQ+lnR7N/KD82TZNqojt
+	 KxZXAX7YvwlknmuTGvyOZJCSrgzuUrHkzZlQ4tA+XfDiraD53RxyI/hajGpv3l/76t
+	 9csVJNsfUy5ObTRhZTXWkpRKFV6NzNIEYytnd5Vo781J+tOqBfh7g61k5WVXH4EMYX
+	 IYM+LRMHE0Cek0I/swQY21Rs2LU+oDxlHZLHFJVesNoBNpVSklCMIK1PinNoWR7qBo
+	 m3H3nLQzdPmSQ==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id E751A4807F7; Thu,  4 May 2023 19:36:20 +0200 (CEST)
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Lee Jones <lee@kernel.org>
+Cc: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v8 12/14] regulator: rk808: cleanup parent device usage
+Date: Thu,  4 May 2023 19:36:16 +0200
+Message-Id: <20230504173618.142075-13-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+References: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20230504_103631_584095_BA1615DE 
+X-CRM114-Status: GOOD (  15.45  )
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+
+By overridering the device's of_node a bit earlier we can
+get the GPIOs and any other DT properties from our own
+device instead of relying on the parent device.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/regulator/rk808-regulator.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/regulator/rk808-regulator.c b/drivers/regulator/rk808-regulator.c
+index 80ba782d8923..71a1ca8b917e 100644
+--- a/drivers/regulator/rk808-regulator.c
++++ b/drivers/regulator/rk808-regulator.c
+@@ -1245,20 +1245,19 @@ static const struct regulator_desc rk818_reg[] = {
+ };
+ 
+ static int rk808_regulator_dt_parse_pdata(struct device *dev,
+-				   struct device *client_dev,
+ 				   struct regmap *map,
+ 				   struct rk808_regulator_data *pdata)
+ {
+ 	struct device_node *np;
+ 	int tmp, ret = 0, i;
+ 
+-	np = of_get_child_by_name(client_dev->of_node, "regulators");
++	np = of_get_child_by_name(dev->of_node, "regulators");
+ 	if (!np)
+ 		return -ENXIO;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(pdata->dvs_gpio); i++) {
+ 		pdata->dvs_gpio[i] =
+-			devm_gpiod_get_index_optional(client_dev, "dvs", i,
++			devm_gpiod_get_index_optional(dev, "dvs", i,
+ 						      GPIOD_OUT_LOW);
+ 		if (IS_ERR(pdata->dvs_gpio[i])) {
+ 			ret = PTR_ERR(pdata->dvs_gpio[i]);
+@@ -1292,6 +1291,9 @@ static int rk808_regulator_probe(struct platform_device *pdev)
+ 	struct regmap *regmap;
+ 	int ret, i, nregulators;
+ 
++	pdev->dev.of_node = pdev->dev.parent->of_node;
++	pdev->dev.of_node_reused = true;
++
+ 	regmap = dev_get_regmap(pdev->dev.parent, NULL);
+ 	if (!regmap)
+ 		return -ENODEV;
+@@ -1300,8 +1302,7 @@ static int rk808_regulator_probe(struct platform_device *pdev)
+ 	if (!pdata)
+ 		return -ENOMEM;
+ 
+-	ret = rk808_regulator_dt_parse_pdata(&pdev->dev, pdev->dev.parent,
+-					     regmap, pdata);
++	ret = rk808_regulator_dt_parse_pdata(&pdev->dev, regmap, pdata);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1335,8 +1336,6 @@ static int rk808_regulator_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	config.dev = &pdev->dev;
+-	config.dev->of_node = pdev->dev.parent->of_node;
+-	config.dev->of_node_reused = true;
+ 	config.driver_data = pdata;
+ 	config.regmap = regmap;
+ 

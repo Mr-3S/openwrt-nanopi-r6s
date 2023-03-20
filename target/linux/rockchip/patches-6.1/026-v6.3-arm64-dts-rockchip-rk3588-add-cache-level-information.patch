@@ -1,0 +1,179 @@
+From patchwork Fri Mar 17 17:41:02 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13179337
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F25DEC6FD1D
+	for <linux-rockchip@archiver.kernel.org>;
+ Fri, 17 Mar 2023 17:41:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:Cc
+	:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
+	List-Owner; bh=bcV9zW49eduhmuFekjxPbYNtvGGYBz93OSfmRxqdcfQ=; b=CUOK8iWeui0j5V
+	ptoQ+lwEf7UvdR+y8h5Ei9LXnWXNjSq7EbgbxRUBjjDotKgNSziapJjDY8X9jzp/hHD16vpO1Ls9F
+	NgCNI2lAXzdp4pKPe/sQdgG5d8685Hj8X0/lDNKy183gc1IvXolnudnpn9WSU8X27doiAej/eGHwd
+	4FSFVyTFDBnnl2wYmfUnz4WEcYH0RbxPoz/5QRo889VCjjAnIPknH/mBbvVnNbQLREXzG5WUgXk8s
+	yhMMXmhdRzn6WM28swx05OKiWmGdTzW6QEefNVJyqeqtKSmXXRzpIlvCY+EaalEpsXuNuXr6IPT9s
+	vo881rCeVZoWm6uVzacQ==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
+	id 1pdE4v-002v3v-0v;
+	Fri, 17 Mar 2023 17:41:21 +0000
+Received: from madras.collabora.co.uk ([46.235.227.172])
+	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
+	id 1pdE4r-002v25-17;
+	Fri, 17 Mar 2023 17:41:18 +0000
+Received: from jupiter.universe (dyndsl-091-248-191-142.ewe-ip-backbone.de
+ [91.248.191.142])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256)
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id C5BC266030C6;
+	Fri, 17 Mar 2023 17:41:13 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1679074873;
+	bh=qxDBq0fQ9YqbrNkN81oPGZ/qN7uYkUt6Ntv20FQUMik=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MjOaVi27U7qOitWXFzGMk8gv4AT0f5Vw5RQzQFzIOpZ7RPKfBwEpbCCJ0oplVo0Pb
+	 uaSz8xEhr80jCNQWkp+dAAQWLquz0KQaKiDMOLkmIJ5VJxbeviI87WJytOyRzTdmW7
+	 D9XnsF0QdQ3U1xkSJJYo5KqkTeceCi6ndnXXoMB2YZWqsCxwz6PCbvxVymmJcBYPXO
+	 EWu2M9Pxcj3pM9vGD9eB9KSbYnk3sWvmw2fUuXfP1Lvgwg5Ir7VSz3EOX4lqbmJMWi
+	 +lPc5BoNBBmGNQwwgJnKNWvR2bF6Cr9R2uWbHufX7ghuhaUpHZt1EP2GlYUnInCqyL
+	 Ki0WFEJNWIXuQ==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id 269BA4807E1; Fri, 17 Mar 2023 18:41:11 +0100 (CET)
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>,
+	linux-rockchip@lists.infradead.org
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCHv1 1/1] arm64: dts: rockchip: rk3588: add cache level
+ information
+Date: Fri, 17 Mar 2023 18:41:02 +0100
+Message-Id: <20230317174102.61209-1-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.39.2
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20230317_104117_537250_1DEA800B 
+X-CRM114-Status: UNSURE (   8.01  )
+X-CRM114-Notice: Please train this message.
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+
+Add missing, mandatory cache-level information for RK3588.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+Fixes init_of_cache_level() returning -EINVAL
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+Index: linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+===================================================================
+--- linux-6.1.orig/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -222,6 +222,7 @@
+ 			cache-size = <131072>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <512>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -230,6 +231,7 @@
+ 			cache-size = <131072>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <512>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -238,6 +240,7 @@
+ 			cache-size = <131072>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <512>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -246,6 +249,7 @@
+ 			cache-size = <131072>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <512>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -254,6 +258,7 @@
+ 			cache-size = <524288>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <1024>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -262,6 +267,7 @@
+ 			cache-size = <524288>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <1024>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -270,6 +276,7 @@
+ 			cache-size = <524288>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <1024>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -278,6 +285,7 @@
+ 			cache-size = <524288>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <1024>;
++			cache-level = <2>;
+ 			next-level-cache = <&l3_cache>;
+ 		};
+ 
+@@ -286,6 +294,7 @@
+ 			cache-size = <3145728>;
+ 			cache-line-size = <64>;
+ 			cache-sets = <4096>;
++			cache-level = <3>;
+ 		};
+ 	};
+ 

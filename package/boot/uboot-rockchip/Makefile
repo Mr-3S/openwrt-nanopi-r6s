@@ -5,10 +5,10 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2021.07
-PKG_RELEASE:=5
+PKG_VERSION:=2023.04-rc4
+PKG_RELEASE:=1
 
-PKG_HASH:=312b7eeae44581d1362c3a3f02c28d806647756c82ba8c72241c7cdbe68ba77e
+PKG_HASH:=19169492e4984b5c692ccbc1d7d038b48b4d795603c8d1088c2071dde0f27a3a
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
@@ -81,18 +81,45 @@ define U-Boot/rockpro64-rk3399
     pine64_rockpro64
 endef
 
+
+# RK3588 boards
+
+define U-Boot/nanopi-r6s-rk3588
+  BUILD_SUBTARGET:=armv8
+  NAME:=NanoPi R6S
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r6s
+  DEPENDS:=+PACKAGE_u-boot-nanopi-r6s-rk3588:arm-trusted-firmware-rockchip
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
+  ATF:=rk3588_bl31.elf
+  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
+endef
+
+
 UBOOT_TARGETS := \
   nanopi-r4s-rk3399 \
   rock-pi-4-rk3399 \
   rockpro64-rk3399 \
   nanopi-r2c-rk3328 \
   nanopi-r2s-rk3328 \
-  roc-cc-rk3328
+  roc-cc-rk3328 \
+  nanopi-r6s-rk3588
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_MAKE_FLAGS += \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF)
+# ifneq ($(ROCKCHIP_TPL),)
+  UBOOT_MAKE_FLAGS += \
+    ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(ROCKCHIP_TPL)
+  UBOOT_CONFIGURE_VARS += \
+    ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(ROCKCHIP_TPL)
+  UBOOT_MAKE_FLAGS += \
+    ARCH=arm
+  UBOOT_CONFIGURE_VARS += \
+    ARCH=arm
+# endif
+
 
 define Build/Configure
 	$(call Build/Configure/U-Boot)
@@ -106,7 +133,7 @@ ifneq ($(OF_PLATDATA),)
 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-decl.h $(PKG_BUILD_DIR)/include/generated/dt-decl.h
 endif
 
-	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
+#	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
 endef
 
 define Build/InstallDev

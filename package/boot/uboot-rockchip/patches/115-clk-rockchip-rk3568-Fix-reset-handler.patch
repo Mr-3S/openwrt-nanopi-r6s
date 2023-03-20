@@ -1,0 +1,67 @@
+From d8cb0933d00fa504f41f2440c4c8408088ade46f Mon Sep 17 00:00:00 2001
+From: Peter Geis <pgwipeout@gmail.com>
+Date: Tue, 14 Mar 2023 00:38:26 +0000
+Subject: [PATCH 115/126] clk: rockchip: rk3568: Fix reset handler
+
+The reset handler for rk3568 is missing its private data. This leads to
+an abort when a reset is triggered.
+
+  => reset
+  resetting ...
+  "Synchronous Abort" handler, esr 0x96000045
+  elr: 0000000000a2bc04 lr : 0000000000a2bbd4 (reloc)
+  elr: 00000000eff9bc04 lr : 00000000eff9bbd4
+  x0 : 00000000fdd20000 x1 : 0000000014000001
+  x2 : 000000000000fdb9 x3 : 00000000edf77e88
+  x4 : 00000000edf50e78 x5 : 00000000edf77530
+  x6 : 000000000000001d x7 : 00000000edf8a1d0
+  x8 : 00000000ffffffd8 x9 : 0000000000000008
+  x10: 000000000000000d x11: 0000000000000006
+  x12: 000000000001869f x13: 0000000086c290c5
+  x14: 000000009118e878 x15: 0000000000000000
+  x16: 00000000eff9bbb8 x17: 0000000012f8c119
+  x18: 00000000edf50dc0 x19: 0000000000000000
+  x20: 0000000000000001 x21: 0000000000000000
+  x22: 00000000edf85900 x23: 0000000000000001
+  x24: 00000000effe8bbc x25: 0000000000000000
+  x26: 00000000edf85940 x27: 0000000000000000
+  x28: 0000000000000000 x29: 00000000edf3c8e0
+
+  Code: d65f03c0 d5033fbf b9400661 529d9502 (b8216802)
+  Resetting CPU ...
+
+Add the missing dev_set_priv to the rk3568 clk driver to fix this.
+
+Fixes: 4a262feba3a5 ("rockchip: rk3568: add clock driver")
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Reviewed-by: Kever Yang <kever.yang@rock-chips.com>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Tested-by: Jagan Teki <jagan@amarulasolutions.com> # radxa-cm3
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/clk/rockchip/clk_rk3568.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/clk/rockchip/clk_rk3568.c b/drivers/clk/rockchip/clk_rk3568.c
+index 99c195b3af..253b69504f 100644
+--- a/drivers/clk/rockchip/clk_rk3568.c
++++ b/drivers/clk/rockchip/clk_rk3568.c
+@@ -14,6 +14,7 @@
+ #include <asm/arch-rockchip/clock.h>
+ #include <asm/arch-rockchip/hardware.h>
+ #include <asm/io.h>
++#include <dm/device-internal.h>
+ #include <dm/lists.h>
+ #include <dt-bindings/clock/rk3568-cru.h>
+ 
+@@ -2937,6 +2938,7 @@ static int rk3568_clk_bind(struct udevice *dev)
+ 						    glb_srst_fst);
+ 		priv->glb_srst_snd_value = offsetof(struct rk3568_cru,
+ 						    glb_srsr_snd);
++		dev_set_priv(sys_child, priv);
+ 	}
+ 
+ #if CONFIG_IS_ENABLED(RESET_ROCKCHIP)
+-- 
+2.34.1
+

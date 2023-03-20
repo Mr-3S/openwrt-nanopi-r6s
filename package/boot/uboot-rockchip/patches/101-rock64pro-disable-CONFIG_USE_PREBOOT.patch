@@ -17,10 +17,17 @@ Signed-off-by: Marty Jones <mj8263788@gmail.com>
 
 --- a/configs/rockpro64-rk3399_defconfig
 +++ b/configs/rockpro64-rk3399_defconfig
+<<<<<<< HEAD
 @@ -12,7 +12,6 @@ CONFIG_DEBUG_UART_CLOCK=24000000
  CONFIG_SPL_SPI_FLASH_SUPPORT=y
  CONFIG_SPL_SPI_SUPPORT=y
  CONFIG_DEBUG_UART=y
+=======
+@@ -17,7 +17,6 @@ CONFIG_SYS_LOAD_ADDR=0x800800
+ CONFIG_BOOTSTAGE_REPORT=y
+ CONFIG_SPL_BOOTSTAGE_RECORD_COUNT=10
+ CONFIG_BOOTSTAGE_STASH=y
+>>>>>>> 6529a2ba15 (uboot-rockchip: add nanopi r6s)
 -CONFIG_USE_PREBOOT=y
  CONFIG_DEFAULT_FDT_FILE="rockchip/rk3399-rockpro64.dtb"
  CONFIG_DISPLAY_BOARDINFO_LATE=y

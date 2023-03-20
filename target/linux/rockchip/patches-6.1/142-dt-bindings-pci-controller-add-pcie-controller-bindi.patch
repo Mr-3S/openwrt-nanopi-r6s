@@ -1,0 +1,35 @@
+From c83a01789e8017faf9d02507239f7e6fe3c08ef3 Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Sat, 4 Feb 2023 16:47:59 +0800
+Subject: [PATCH 142/144] dt-bindings: pci: controller: add pcie controller
+ binding for RK3588
+
+All the properties are the same with RK3568 PCIE controllers, and in
+fact the driver can also be reused between RK3568 and RK3588
+PCIE controllers.
+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+index bc0a9d1db750..3df3e50bb377 100644
+--- a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+@@ -21,8 +21,9 @@ allOf:
+ 
+ properties:
+   compatible:
+-    items:
+-      - const: rockchip,rk3568-pcie
++    enum:
++      - rockchip,rk3568-pcie
++      - rockchip,rk3588-pcie
+ 
+   reg:
+     items:
+-- 
+2.34.1
+

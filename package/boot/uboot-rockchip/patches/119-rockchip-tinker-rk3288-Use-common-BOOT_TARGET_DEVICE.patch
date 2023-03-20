@@ -1,0 +1,72 @@
+From ecde99c8f358049e4ed7e01861849369fad4b60c Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 14 Mar 2023 00:38:31 +0000
+Subject: [PATCH 119/126] rockchip: tinker-rk3288: Use common
+ BOOT_TARGET_DEVICES
+
+Building U-Boot for Tinker Board with USB or NET Kconfig option disabled
+result in the following build error:
+
+  In file included from include/configs/rk3288_common.h:29,
+                   from include/configs/tinker_rk3288.h:14,
+                   from include/config.h:3,
+                   from include/common.h:16,
+                   from env/common.c:10:
+  include/config_distro_bootcmd.h:302:9: error: expected '}' before 'BOOT_TARGET_DEVICES_references_USB_without_CONFIG_CMD_USB'
+    302 |         BOOT_TARGET_DEVICES_references_USB_without_CONFIG_CMD_USB
+        |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  include/config_distro_bootcmd.h:302:9: note: in definition of macro 'BOOTENV_DEV_NAME_USB'
+    302 |         BOOT_TARGET_DEVICES_references_USB_without_CONFIG_CMD_USB
+        |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  include/configs/tinker_rk3288.h:21:9: note: in expansion of macro 'BOOTENV_DEV_NAME'
+     21 |         func(USB, usb, 0) \
+        |         ^~~~
+  include/config_distro_bootcmd.h:454:25: note: in expansion of macro 'BOOT_TARGET_DEVICES'
+    454 |         "boot_targets=" BOOT_TARGET_DEVICES(BOOTENV_DEV_NAME) "\0"
+        |                         ^~~~~~~~~~~~~~~~~~~
+  include/config_distro_bootcmd.h:474:9: note: in expansion of macro 'BOOTENV_BOOT_TARGETS'
+    474 |         BOOTENV_BOOT_TARGETS \
+        |         ^~~~~~~~~~~~~~~~~~~~
+  include/configs/rk3288_common.h:40:9: note: in expansion of macro 'BOOTENV'
+     40 |         BOOTENV
+        |         ^~~~~~~
+  include/env_default.h:122:9: note: in expansion of macro 'CFG_EXTRA_ENV_SETTINGS'
+    122 |         CFG_EXTRA_ENV_SETTINGS
+        |         ^~~~~~~~~~~~~~~~~~~~~~
+  In file included from env/common.c:32:
+  include/env_default.h:29:36: note: to match this '{'
+     29 | const char default_environment[] = {
+        |                                    ^
+  make[2]: *** [scripts/Makefile.build:256: env/common.o] Error 1
+
+The BOOT_TARGET_DEVICES defined in rockchip-common.h include the same
+devices as defined in tinker_rk3288.h, remove the board specific one to
+fix building with USB or NET option disabled.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Kever Yang <kever.yang@rock-chips.com>
+---
+ include/configs/tinker_rk3288.h | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/include/configs/tinker_rk3288.h b/include/configs/tinker_rk3288.h
+index 269ec529a3..053c9032e2 100644
+--- a/include/configs/tinker_rk3288.h
++++ b/include/configs/tinker_rk3288.h
+@@ -13,13 +13,4 @@
+ 
+ #include <configs/rk3288_common.h>
+ 
+-#undef BOOT_TARGET_DEVICES
+-
+-#define BOOT_TARGET_DEVICES(func) \
+-	func(MMC, mmc, 0) \
+-	func(MMC, mmc, 1) \
+-	func(USB, usb, 0) \
+-	func(PXE, pxe, na) \
+-	func(DHCP, dchp, na)
+-
+ #endif
+-- 
+2.34.1
+

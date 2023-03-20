@@ -1,0 +1,101 @@
+From 0f3c9714ef73fbc3c960a6759e6494675e03084a Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 14 Mar 2023 00:38:38 +0000
+Subject: [PATCH 123/126] rockchip: Convert rk35xx to use standard boot
+
+Imply use of BOOTSTD and OF_LIBFDT_OVERLAY on RK3568 and RK3588.
+Drop the use of scripts and rely on standard boot for all operation.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+---
+ arch/arm/mach-rockchip/Kconfig  | 6 ++++++
+ include/configs/rk3568_common.h | 9 +++++++--
+ include/configs/rk3588_common.h | 9 +++++++--
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/mach-rockchip/Kconfig b/arch/arm/mach-rockchip/Kconfig
+index e5ac58ae60..5e8aacc2ea 100644
+--- a/arch/arm/mach-rockchip/Kconfig
++++ b/arch/arm/mach-rockchip/Kconfig
+@@ -289,6 +289,9 @@ config ROCKCHIP_RK3568
+ 	select DM_REGULATOR_FIXED
+ 	select DM_RESET
+ 	imply ROCKCHIP_COMMON_BOARD
++	imply BOOTSTD_BOOTCOMMAND
++	imply BOOTSTD_DEFAULTS
++	imply OF_LIBFDT_OVERLAY
+ 	imply ROCKCHIP_OTP
+ 	imply MISC_INIT_R
+ 	help
+@@ -310,6 +313,9 @@ config ROCKCHIP_RK3588
+ 	select SYSCON
+ 	select BOARD_LATE_INIT
+ 	imply ROCKCHIP_COMMON_BOARD
++	imply BOOTSTD_BOOTCOMMAND
++	imply BOOTSTD_DEFAULTS
++	imply OF_LIBFDT_OVERLAY
+ 	imply ROCKCHIP_OTP
+ 	imply MISC_INIT_R
+ 	help
+diff --git a/include/configs/rk3568_common.h b/include/configs/rk3568_common.h
+index a5e1dde508..164c123d94 100644
+--- a/include/configs/rk3568_common.h
++++ b/include/configs/rk3568_common.h
+@@ -17,10 +17,15 @@
+ 
+ #define ENV_MEM_LAYOUT_SETTINGS		\
+ 	"scriptaddr=0x00c00000\0"	\
++	"script_offset_f=0xffe000\0"	\
++	"script_size_f=0x2000\0"	\
+ 	"pxefile_addr_r=0x00e00000\0"	\
+ 	"fdt_addr_r=0x0a100000\0"	\
++	"fdtoverlay_addr_r=0x02000000\0"	\
+ 	"kernel_addr_r=0x02080000\0"	\
+-	"ramdisk_addr_r=0x0a200000\0"
++	"ramdisk_addr_r=0x0a200000\0"	\
++	"kernel_comp_addr_r=0x08000000\0"	\
++	"kernel_comp_size=0x2000000\0"
+ 
+ #include <config_distro_bootcmd.h>
+ #define CFG_EXTRA_ENV_SETTINGS		\
+@@ -28,6 +33,6 @@
+ 	"fdtfile=" CONFIG_DEFAULT_FDT_FILE "\0" \
+ 	"partitions=" PARTS_DEFAULT		\
+ 	ROCKCHIP_DEVICE_SETTINGS		\
+-	BOOTENV
++	BOOTENV_BOOT_TARGETS
+ 
+ #endif
+diff --git a/include/configs/rk3588_common.h b/include/configs/rk3588_common.h
+index abd20139aa..7ff0481a69 100644
+--- a/include/configs/rk3588_common.h
++++ b/include/configs/rk3588_common.h
+@@ -16,10 +16,15 @@
+ 
+ #define ENV_MEM_LAYOUT_SETTINGS		\
+ 	"scriptaddr=0x00c00000\0"	\
++	"script_offset_f=0xffe000\0"	\
++	"script_size_f=0x2000\0"	\
+ 	"pxefile_addr_r=0x00e00000\0"	\
+ 	"fdt_addr_r=0x0a100000\0"	\
++	"fdtoverlay_addr_r=0x02000000\0"	\
+ 	"kernel_addr_r=0x02080000\0"	\
+-	"ramdisk_addr_r=0x0a200000\0"
++	"ramdisk_addr_r=0x0a200000\0"	\
++	"kernel_comp_addr_r=0x08000000\0"	\
++	"kernel_comp_size=0x2000000\0"
+ 
+ #include <config_distro_bootcmd.h>
+ #define CFG_EXTRA_ENV_SETTINGS \
+@@ -27,6 +32,6 @@
+ 	"partitions=" PARTS_DEFAULT		\
+ 	ENV_MEM_LAYOUT_SETTINGS			\
+ 	ROCKCHIP_DEVICE_SETTINGS		\
+-	BOOTENV
++	BOOTENV_BOOT_TARGETS
+ 
+ #endif /* __CONFIG_RK3588_COMMON_H */
+-- 
+2.34.1
+

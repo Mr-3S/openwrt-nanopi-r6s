@@ -108,3 +108,13 @@ define Device/xunlong_orangepi-r1-plus-lts
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
 TARGET_DEVICES += xunlong_orangepi-r1-plus-lts
+define Device/friendlyarm_nanopi-r6s
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi R6S
+  DEVICE_VARIANT := 8GB LPDDR4
+  SOC := rk3588s
+  UBOOT_DEVICE_NAME := nanopi-r6s-rk3588
+  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
+  DEVICE_PACKAGES := kmod-r8169
+endef
+TARGET_DEVICES += friendlyarm_nanopi-r6s

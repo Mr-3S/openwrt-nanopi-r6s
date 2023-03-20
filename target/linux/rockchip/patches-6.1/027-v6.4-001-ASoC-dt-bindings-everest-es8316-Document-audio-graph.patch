@@ -1,0 +1,39 @@
+From 1636bd8756d3124ccc0581f581c3c2921787519e Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 15 Mar 2023 13:47:58 +0200
+Subject: [PATCH 127/134] ASoC: dt-bindings: everest,es8316: Document audio
+ graph port
+
+The ES8316 codec is currently used in conjunction with audio-graph-card
+to provide an endpoint for binding with the other side of the audio
+link.
+
+This is achieved via the 'port' property, which is not allowed:
+
+  rk3399-rockpro64.dtb: codec@11: Unevaluated properties are not allowed ('port' was unexpected)
+
+Fix the issue by documenting the missing property.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+---
+ Documentation/devicetree/bindings/sound/everest,es8316.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/everest,es8316.yaml b/Documentation/devicetree/bindings/sound/everest,es8316.yaml
+index 3b752bba748b..23d17ff4e6cb 100644
+--- a/Documentation/devicetree/bindings/sound/everest,es8316.yaml
++++ b/Documentation/devicetree/bindings/sound/everest,es8316.yaml
+@@ -25,6 +25,10 @@ properties:
+     items:
+       - const: mclk
+ 
++  port:
++    $ref: audio-graph-port.yaml#
++    unevaluatedProperties: false
++
+   "#sound-dai-cells":
+     const: 0
+ 
+-- 
+2.34.1
+

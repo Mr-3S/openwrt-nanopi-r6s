@@ -1,0 +1,39 @@
+From afadf005ffd046867777387bc11fdb77d7e718af Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 15 Mar 2023 13:47:59 +0200
+Subject: [PATCH 128/134] ASoC: dt-bindings: rockchip: Document audio graph
+ port
+
+The Rockchip I2S controller is currently used in conjunction with
+audio-graph-card to provide an endpoint for binding with the other side
+of the audio link.
+
+This is achieved via the 'port' property, which is not allowed:
+
+  rk3399-rockpro64.dtb: i2s@ff890000: Unevaluated properties are not allowed ('port' was unexpected)
+
+Fix the issue by documenting the missing property.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+---
+ Documentation/devicetree/bindings/sound/rockchip-i2s.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml b/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
+index 7e36e389e976..93beb3169ce5 100644
+--- a/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
++++ b/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
+@@ -79,6 +79,10 @@ properties:
+   resets:
+     maxItems: 2
+ 
++  port:
++    $ref: audio-graph-port.yaml#
++    unevaluatedProperties: false
++
+   rockchip,capture-channels:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     default: 2
+-- 
+2.34.1
+

@@ -164,6 +164,21 @@ define U-Boot/nanopi-r5s-rk3568
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r5s
 endef
+# RK3588 boards
+
+define U-Boot/nanopi-r6s-rk3588
+  BUILD_SUBTARGET:=armv8
+  NAME:=NanoPi R6S
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r6s
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3588
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
+  ATF:=rk3588_bl31_v1.40.elf
+  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
+  TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
+
+endef
+
 
 UBOOT_TARGETS := \
   nanopc-t4-rk3399 \
@@ -180,7 +195,8 @@ UBOOT_TARGETS := \
   rock-pi-e-rk3328 \
   radxa-cm3-io-rk3566 \
   nanopi-r5c-rk3568 \
-  nanopi-r5s-rk3568
+  nanopi-r5s-rk3568 \
+  nanopi-r6s-rk3588
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
@@ -193,6 +209,11 @@ UBOOT_MAKE_FLAGS += \
   PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
   $(if $(TPL),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(TPL))
+
+UBOOT_MAKE_FLAGS += \
+  ARCH=arm
+UBOOT_CONFIGURE_VARS += \
+  ARCH=arm
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)

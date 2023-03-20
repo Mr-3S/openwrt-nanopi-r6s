@@ -140,6 +140,21 @@ define U-Boot/nanopi-r5s-rk3568
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r5s
 endef
+# RK3588 boards
+
+define U-Boot/nanopi-r6s-rk3588
+  BUILD_SUBTARGET:=armv8
+  NAME:=NanoPi R6S
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r6s
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3588
+  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
+  ATF:=rk3588_bl31_v1.40.elf
+  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
+  TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
+
+endef
+
 
 UBOOT_TARGETS := \
   nanopc-t4-rk3399 \
@@ -154,7 +169,8 @@ UBOOT_TARGETS := \
   rock64-rk3328 \
   rock-pi-e-rk3328 \
   nanopi-r5c-rk3568 \
-  nanopi-r5s-rk3568
+  nanopi-r5s-rk3568 \
+  nanopi-r6s-rk3588
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
@@ -167,6 +183,33 @@ UBOOT_MAKE_FLAGS += \
   PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
   $(if $(TPL),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(TPL))
+#  BL31=$(STAGING_DIR_IMAGE)/$(ATF)
+# ifneq ($(ROCKCHIP_TPL),)
+#  UBOOT_MAKE_FLAGS += \
+#    ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(ROCKCHIP_TPL)
+#  UBOOT_CONFIGURE_VARS += \
+#    ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(ROCKCHIP_TPL)
+  UBOOT_MAKE_FLAGS += \
+    ARCH=arm
+  UBOOT_CONFIGURE_VARS += \
+    ARCH=arm
+# endif
+
+
+# define Build/Configure
+# 	$(call Build/Configure/U-Boot)
+
+# ifneq ($(OF_PLATDATA),)
+# 	mkdir -p $(PKG_BUILD_DIR)/tpl/dts
+# 	mkdir -p $(PKG_BUILD_DIR)/include/generated
+
+# 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-plat.c $(PKG_BUILD_DIR)/tpl/dts/dt-plat.c
+# 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-structs-gen.h $(PKG_BUILD_DIR)/include/generated/dt-structs-gen.h
+# 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-decl.h $(PKG_BUILD_DIR)/include/generated/dt-decl.h
+# endif
+
+# #	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
+# endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)

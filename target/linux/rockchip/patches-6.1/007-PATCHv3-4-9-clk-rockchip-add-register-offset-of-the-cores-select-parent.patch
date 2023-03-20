@@ -1,0 +1,173 @@
+From patchwork Tue Oct 18 15:14:02 2022
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13010725
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DD32CC4332F
+	for <linux-rockchip@archiver.kernel.org>;
+ Tue, 18 Oct 2022 15:15:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=wrfKPU8KHERCWFqyDOYnw1I/Z970876UYgUyKA+cAvg=; b=v40zc4w43JnTmt
+	2g981OP3SGhcCkOCwGulyDhJzRQ6PL2VyRc+EuUzkxncjXCoGo/33ke6U1ohwDGVY2LEuGnULFWXa
+	8HO2QVlhd0Hn+kwBUXfI4sA7WaUk++Aa/uCNwQPawI6qrhSap7tV4KGpCQhzQOz0nYDJReXZ9R8Qm
+	dCVly+on7xOzojboOxjM/5ztJzaw5tG08ZsCQ12dS5+Ipl6igfYhV0fSMpcdCblD4VpqEjF3+f2jm
+	n5dkpkr3yq333RAxgL0lxCCmDMq29CLYIw9IXMMwkFudhDrqvXQGbJb/UjyUzECZyY4Merq+qKDqB
+	9XrW4athM7grUniQQLsw==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1okoJT-007Tio-58; Tue, 18 Oct 2022 15:15:27 +0000
+Received: from madras.collabora.co.uk ([2a00:1098:0:82:1000:25:2eeb:e5ab])
+	by bombadil.infradead.org with esmtps (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1okoIS-007TAx-Kq; Tue, 18 Oct 2022 15:14:28 +0000
+Received: from jupiter.universe (dyndsl-095-033-155-016.ewe-ip-backbone.de
+ [95.33.155.16])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 1F9356602387;
+	Tue, 18 Oct 2022 16:14:19 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1666106059;
+	bh=UTRAMSXiL/feVOn1tFuEFRGIiDussK9ewGhSwjaEbg0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=YyIcklqgOywtELGF4fxV73lnO1TBIbgPAYb0UQiTTjzJRF9bCVWJ5vx61xYL66pcV
+	 CDTyOZ9g3IB4DTiioMkA9icw8WoLQ5W0xMthDbTrbbSApkLDLfY2w5kMdiG8l2tIZF
+	 Mvmp7+W05iaktd8QGCvKCxBYPBhZbVcnUNHcTkARGxQmaTDxL2WWhjEPZyWCbOygDc
+	 hQ8nVKhAiLIYeteHaEFmtvVwTDqxu7ccLQxWfa5T3cUbbXlGvohxbBiiF7sopo5Yfs
+	 OiBK/vnOR/Zet/kCi4R/M6pfL19UBC0jmugOIE7Ku1qs3O56mdMY2OnF6dpvvCaStY
+	 qSPp4GZYCmmhQ==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id 284B74801B8; Tue, 18 Oct 2022 17:14:16 +0200 (CEST)
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	linux-clk@vger.kernel.org,
+	linux-rockchip@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	Elaine Zhang <zhangqing@rock-chips.com>,
+	kernel@collabora.com,
+	Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCHv3 4/9] clk: rockchip: add register offset of the cores select
+ parent
+Date: Tue, 18 Oct 2022 17:14:02 +0200
+Message-Id: <20221018151407.63395-5-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221018151407.63395-1-sebastian.reichel@collabora.com>
+References: <20221018151407.63395-1-sebastian.reichel@collabora.com>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20221018_081424_879297_CADAAA4A 
+X-CRM114-Status: GOOD (  15.70  )
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+
+From: Elaine Zhang <zhangqing@rock-chips.com>
+
+The cores select parent register is special on RK3588.
+
+Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/clk/rockchip/clk-cpu.c | 28 ++++++++++++++++++++--------
+ drivers/clk/rockchip/clk.h     |  3 +++
+ 2 files changed, 23 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/clk/rockchip/clk-cpu.c b/drivers/clk/rockchip/clk-cpu.c
+index 47288197c9d7..11aa2259b532 100644
+--- a/drivers/clk/rockchip/clk-cpu.c
++++ b/drivers/clk/rockchip/clk-cpu.c
+@@ -166,10 +166,16 @@ static int rockchip_cpuclk_pre_rate_change(struct rockchip_cpuclk *cpuclk,
+ 		}
+ 	}
+ 	/* select alternate parent */
+-	writel(HIWORD_UPDATE(reg_data->mux_core_alt,
+-			     reg_data->mux_core_mask,
+-			     reg_data->mux_core_shift),
+-	       cpuclk->reg_base + reg_data->core_reg[0]);
++	if (reg_data->mux_core_reg)
++		writel(HIWORD_UPDATE(reg_data->mux_core_alt,
++				     reg_data->mux_core_mask,
++				     reg_data->mux_core_shift),
++		       cpuclk->reg_base + reg_data->mux_core_reg);
++	else
++		writel(HIWORD_UPDATE(reg_data->mux_core_alt,
++				     reg_data->mux_core_mask,
++				     reg_data->mux_core_shift),
++		       cpuclk->reg_base + reg_data->core_reg[0]);
+ 
+ 	spin_unlock_irqrestore(cpuclk->lock, flags);
+ 	return 0;
+@@ -202,10 +208,16 @@ static int rockchip_cpuclk_post_rate_change(struct rockchip_cpuclk *cpuclk,
+ 	 * primary parent by the extra dividers that were needed for the alt.
+ 	 */
+ 
+-	writel(HIWORD_UPDATE(reg_data->mux_core_main,
+-			     reg_data->mux_core_mask,
+-			     reg_data->mux_core_shift),
+-	       cpuclk->reg_base + reg_data->core_reg[0]);
++	if (reg_data->mux_core_reg)
++		writel(HIWORD_UPDATE(reg_data->mux_core_main,
++				     reg_data->mux_core_mask,
++				     reg_data->mux_core_shift),
++		       cpuclk->reg_base + reg_data->mux_core_reg);
++	else
++		writel(HIWORD_UPDATE(reg_data->mux_core_main,
++				     reg_data->mux_core_mask,
++				     reg_data->mux_core_shift),
++		       cpuclk->reg_base + reg_data->core_reg[0]);
+ 
+ 	/* remove dividers */
+ 	for (i = 0; i < reg_data->num_cores; i++) {
+diff --git a/drivers/clk/rockchip/clk.h b/drivers/clk/rockchip/clk.h
+index ee01739e4a7c..43a37a43b6f3 100644
+--- a/drivers/clk/rockchip/clk.h
++++ b/drivers/clk/rockchip/clk.h
+@@ -389,6 +389,8 @@ struct rockchip_cpuclk_rate_table {
+  * @div_core_shift[]:	cores divider offset used to divide the pll value
+  * @div_core_mask[]:	cores divider mask
+  * @num_cores:	number of cpu cores
++ * @mux_core_reg:       register offset of the cores select parent
++ * @mux_core_alt:       mux value to select alternate parent
+  * @mux_core_main:	mux value to select main parent of core
+  * @mux_core_shift:	offset of the core multiplexer
+  * @mux_core_mask:	core multiplexer mask
+@@ -398,6 +400,7 @@ struct rockchip_cpuclk_reg_data {
+ 	u8	div_core_shift[ROCKCHIP_CPUCLK_MAX_CORES];
+ 	u32	div_core_mask[ROCKCHIP_CPUCLK_MAX_CORES];
+ 	int	num_cores;
++	int	mux_core_reg;
+ 	u8	mux_core_alt;
+ 	u8	mux_core_main;
+ 	u8	mux_core_shift;

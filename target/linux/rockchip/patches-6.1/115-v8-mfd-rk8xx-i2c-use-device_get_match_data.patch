@@ -1,0 +1,259 @@
+From patchwork Thu May  4 17:36:10 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13231434
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC499C7EE2C
+	for <linux-rockchip@archiver.kernel.org>;
+ Thu,  4 May 2023 17:36:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=uZRo9YjFXErafxb17wvqlDt+siVtHN4MsifgW0og19U=; b=RFtboHXColWFOA
+	gZOc+BIW8HV0molRkRFQrt7atNt9uj8kuXOrSv7tsMsAzW60CM5X60CT7qvoec+/1y1sRkPu8xe85
+	0BgDi3f5/zxTmZMpSoIy9Hu43a4XDlk3E2ezXu/X61lcR2+uXv5ow+bTLsiRMY2z3oexbnlUecOJh
+	eaCSZFW2WvAk2/zDvQd/IMwCIOtVqOmeg2Nz1gXOTeH04jm6qQ83JjUG8GAMgznrx0F8bxf7bVk6U
+	mzk6QF7qFv3MBBf4pcgcvZ3DZzXJkGXL0wIbnBriBHntOiGv2Yb5bRDhCOQrlzV9Qmw+z5yj/I8iY
+	h3z/GahVEzznscwqW3yg==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsd-008R5h-2k;
+	Thu, 04 May 2023 17:36:35 +0000
+Received: from madras.collabora.co.uk ([46.235.227.172])
+	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsX-008Qzb-1b
+	for linux-rockchip@lists.infradead.org;
+	Thu, 04 May 2023 17:36:31 +0000
+Received: from jupiter.universe (dyndsl-091-248-211-176.ewe-ip-backbone.de
+ [91.248.211.176])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 0F7DB6605707;
+	Thu,  4 May 2023 18:36:25 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1683221785;
+	bh=ECt0CybBtygKRV+cG8dWptfNQKYwpjyME5jwl4Im7tY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=UsAvjjCL4/kYWXztzGHptCNV0E7/0BqeIJHOfBH5wFm8Q3h9/Tp/LM8Xmc4EaCRVB
+	 csKCOh15rsg1NWNRq0gJEL76o7+jB1rgEfKp3lj/C2gkt6rrm400T8SxX/gw6rqFwW
+	 +HIONHU7JQ2S/jSeXrTFjNEmYcYrYvjzCv0hcGK9HGntXkiqIDEuxiBpVAOtRfwEar
+	 mc7LuG1t7manfxH3nMR8JKo59qpR0H+GDGRfyfweb2UuS1QjOJ9yjJ1T3NWCUsJRXh
+	 3ktsdPiSOAIpSZ9AnQtDd7z06vHE5oSOXposm3pQasEgVm9DxkxU6OgPcZrcy1baNx
+	 lGaUNTjllhiww==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id DE38D4807F0; Thu,  4 May 2023 19:36:20 +0200 (CEST)
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Lee Jones <lee@kernel.org>
+Cc: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com,
+	Diederik de Haas <didi.debian@cknow.org>,
+	Vincent Legoll <vincent.legoll@gmail.com>
+Subject: [PATCH v8 06/14] mfd: rk8xx-i2c: use device_get_match_data
+Date: Thu,  4 May 2023 19:36:10 +0200
+Message-Id: <20230504173618.142075-7-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+References: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20230504_103629_803043_FCEE6733 
+X-CRM114-Status: GOOD (  17.54  )
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+
+Simplify the device identification logic by supplying the relevant
+information via of_match_data. This also removes the dev_info()
+printing the chip version, since that's supplied by the match data
+now.
+
+Due to lack of hardware this change is compile-tested only.
+
+Acked-for-MFD-by: Lee Jones <lee@kernel.org>
+Tested-by: Diederik de Haas <didi.debian@cknow.org> # Rock64, Quartz64 Model A + B
+Tested-by: Vincent Legoll <vincent.legoll@gmail.com> # Pine64 QuartzPro64
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/mfd/rk8xx-core.c |  2 -
+ drivers/mfd/rk8xx-i2c.c  | 89 +++++++++++++++++-----------------------
+ 2 files changed, 37 insertions(+), 54 deletions(-)
+
+diff --git a/drivers/mfd/rk8xx-core.c b/drivers/mfd/rk8xx-core.c
+index 5c0a5acef34c..ddf2052c5190 100644
+--- a/drivers/mfd/rk8xx-core.c
++++ b/drivers/mfd/rk8xx-core.c
+@@ -597,8 +597,6 @@ int rk8xx_probe(struct device *dev, int variant, unsigned int irq, struct regmap
+ 		return -EINVAL;
+ 	}
+ 
+-	dev_info(dev, "chip id: 0x%x\n", (unsigned int)rk808->variant);
+-
+ 	if (!irq)
+ 		return dev_err_probe(dev, -EINVAL, "No interrupt support, no core IRQ\n");
+ 
+diff --git a/drivers/mfd/rk8xx-i2c.c b/drivers/mfd/rk8xx-i2c.c
+index 6d121b589fec..2822bfa8a04a 100644
+--- a/drivers/mfd/rk8xx-i2c.c
++++ b/drivers/mfd/rk8xx-i2c.c
+@@ -16,6 +16,11 @@
+ #include <linux/of.h>
+ #include <linux/regmap.h>
+ 
++struct rk8xx_i2c_platform_data {
++	const struct regmap_config *regmap_cfg;
++	int variant;
++};
++
+ static bool rk808_is_volatile_reg(struct device *dev, unsigned int reg)
+ {
+ 	/*
+@@ -103,66 +108,46 @@ static const struct regmap_config rk817_regmap_config = {
+ 	.volatile_reg = rk817_is_volatile_reg,
+ };
+ 
+-static int rk8xx_i2c_get_variant(struct i2c_client *client)
+-{
+-	u8 pmic_id_msb, pmic_id_lsb;
+-	int msb, lsb;
+-
+-	if (of_device_is_compatible(client->dev.of_node, "rockchip,rk817") ||
+-	    of_device_is_compatible(client->dev.of_node, "rockchip,rk809")) {
+-		pmic_id_msb = RK817_ID_MSB;
+-		pmic_id_lsb = RK817_ID_LSB;
+-	} else {
+-		pmic_id_msb = RK808_ID_MSB;
+-		pmic_id_lsb = RK808_ID_LSB;
+-	}
++static const struct rk8xx_i2c_platform_data rk805_data = {
++	.regmap_cfg = &rk805_regmap_config,
++	.variant = RK805_ID,
++};
++
++static const struct rk8xx_i2c_platform_data rk808_data = {
++	.regmap_cfg = &rk808_regmap_config,
++	.variant = RK808_ID,
++};
+ 
+-	/* Read chip variant */
+-	msb = i2c_smbus_read_byte_data(client, pmic_id_msb);
+-	if (msb < 0)
+-		return dev_err_probe(&client->dev, msb, "failed to read the chip id MSB\n");
++static const struct rk8xx_i2c_platform_data rk809_data = {
++	.regmap_cfg = &rk817_regmap_config,
++	.variant = RK809_ID,
++};
+ 
+-	lsb = i2c_smbus_read_byte_data(client, pmic_id_lsb);
+-	if (lsb < 0)
+-		return dev_err_probe(&client->dev, lsb, "failed to read the chip id LSB\n");
++static const struct rk8xx_i2c_platform_data rk817_data = {
++	.regmap_cfg = &rk817_regmap_config,
++	.variant = RK817_ID,
++};
+ 
+-	return ((msb << 8) | lsb) & RK8XX_ID_MSK;
+-}
++static const struct rk8xx_i2c_platform_data rk818_data = {
++	.regmap_cfg = &rk818_regmap_config,
++	.variant = RK818_ID,
++};
+ 
+ static int rk8xx_i2c_probe(struct i2c_client *client)
+ {
+-	const struct regmap_config *regmap_cfg;
++	const struct rk8xx_i2c_platform_data *data;
+ 	struct regmap *regmap;
+-	int variant;
+ 
+-	variant = rk8xx_i2c_get_variant(client);
+-	if (variant < 0)
+-		return variant;
+-
+-	switch (variant) {
+-	case RK805_ID:
+-		regmap_cfg = &rk805_regmap_config;
+-		break;
+-	case RK808_ID:
+-		regmap_cfg = &rk808_regmap_config;
+-		break;
+-	case RK818_ID:
+-		regmap_cfg = &rk818_regmap_config;
+-		break;
+-	case RK809_ID:
+-	case RK817_ID:
+-		regmap_cfg = &rk817_regmap_config;
+-		break;
+-	default:
+-		return dev_err_probe(&client->dev, -EINVAL, "Unsupported RK8XX ID %x\n", variant);
+-	}
++	data = device_get_match_data(&client->dev);
++	if (!data)
++		return -ENODEV;
+ 
+-	regmap = devm_regmap_init_i2c(client, regmap_cfg);
++	regmap = devm_regmap_init_i2c(client, data->regmap_cfg);
+ 	if (IS_ERR(regmap))
+ 		return dev_err_probe(&client->dev, PTR_ERR(regmap),
+ 				     "regmap initialization failed\n");
+ 
+-	return rk8xx_probe(&client->dev, variant, client->irq, regmap);
++	return rk8xx_probe(&client->dev, data->variant, client->irq, regmap);
+ }
+ 
+ static void rk8xx_i2c_shutdown(struct i2c_client *client)
+@@ -173,11 +158,11 @@ static void rk8xx_i2c_shutdown(struct i2c_client *client)
+ static SIMPLE_DEV_PM_OPS(rk8xx_i2c_pm_ops, rk8xx_suspend, rk8xx_resume);
+ 
+ static const struct of_device_id rk8xx_i2c_of_match[] = {
+-	{ .compatible = "rockchip,rk805" },
+-	{ .compatible = "rockchip,rk808" },
+-	{ .compatible = "rockchip,rk809" },
+-	{ .compatible = "rockchip,rk817" },
+-	{ .compatible = "rockchip,rk818" },
++	{ .compatible = "rockchip,rk805", .data = &rk805_data },
++	{ .compatible = "rockchip,rk808", .data = &rk808_data },
++	{ .compatible = "rockchip,rk809", .data = &rk809_data },
++	{ .compatible = "rockchip,rk817", .data = &rk817_data },
++	{ .compatible = "rockchip,rk818", .data = &rk818_data },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, rk8xx_i2c_of_match);

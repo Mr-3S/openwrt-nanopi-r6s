@@ -1,0 +1,161 @@
+From bdc2098d878e4d4377d8290e515f1248f8fd237b Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 14 Mar 2023 00:38:24 +0000
+Subject: [PATCH 114/126] rockchip: rk3568-rock-3a: Sync device tree from linux
+
+Running U-Boot from eMMC on a ROCK 3 Model A result in the following:
+
+  U-Boot SPL 2023.04-rc3 (Mar 11 2023 - 17:24:48 +0000)
+  Trying to boot from MMC1
+  Card did not respond to voltage select! : -110
+  spl: mmc init failed with error: -95
+  SPL: failed to boot from all boot devices
+  ### ERROR ### Please RESET the board ###
+
+The sdhci node is missing in board device tree, sync device tree from
+linux v6.3-rc1 to fix booting from eMMC. Also disable sdmmc2 and uart1
+nodes related to using a WiFi and BT module in the M2 slot.
+
+Fixes: b44c54f600ab ("arm64: dts: rockchip: rk3568: Add Radxa ROCK 3 Model A board support")
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Kever Yang <kever.yang@rock-chips.com>
+---
+ arch/arm/dts/rk3568-rock-3a-u-boot.dtsi |  10 +-
+ arch/arm/dts/rk3568-rock-3a.dts         | 261 +++++++++++++++++++++++-
+ 2 files changed, 262 insertions(+), 9 deletions(-)
+
+Index: u-boot-2023.04/arch/arm/dts/rk3568-rock-3a.dts
+===================================================================
+--- u-boot-2023.04.orig/arch/arm/dts/rk3568-rock-3a.dts
++++ u-boot-2023.04/arch/arm/dts/rk3568-rock-3a.dts
+@@ -617,6 +617,27 @@
+ 	status = "okay";
+ };
+ 
++&pcie2x1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie_reset_h>;
++	reset-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie>;
++	status = "okay";
++};
++
++&pcie30phy {
++	phy-supply = <&vcc3v3_pi6c_03>;
++	status = "okay";
++};
++
++&pcie3x2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pcie30x2m1_pins>;
++	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc3v3_pcie>;
++	status = "okay";
++};
++
+ &pinctrl {
+ 	cam {
+ 		vcc_cam_en: vcc_cam_en {
+@@ -783,6 +804,78 @@
+ 	};
+ };
+ 
++&saradc {
++	vref-supply = <&vcca_1v8>;
++	status = "okay";
++};
++
++&sdhci {
++	bus-width = <8>;
++	max-frequency = <200000000>;
++	non-removable;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
++	vmmc-supply = <&vcc_3v3>;
++	vqmmc-supply = <&vcc_1v8>;
++	status = "okay";
++};
++
++&sdmmc0 {
++	bus-width = <4>;
++	cap-sd-highspeed;
++	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
++	disable-wp;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
++	sd-uhs-sdr50;
++	vmmc-supply = <&vcc3v3_sd>;
++	vqmmc-supply = <&vccio_sd>;
++	status = "okay";
++};
++
++&sdmmc2 {
++	bus-width = <4>;
++	disable-wp;
++	cap-sd-highspeed;
++	cap-sdio-irq;
++	keep-power-in-suspend;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	non-removable;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
++	sd-uhs-sdr104;
++	vmmc-supply = <&vcc3v3_sys>;
++	vqmmc-supply = <&vcc_1v8>;
++	status = "okay";
++};
++
++&tsadc {
++	rockchip,hw-tshut-mode = <1>;
++	rockchip,hw-tshut-polarity = <0>;
++	status = "okay";
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1m0_xfer &uart1m0_ctsn &uart1m0_rtsn>;
++	uart-has-rtscts;
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		clocks = <&rk809 1>;
++		clock-names = "lpo";
++		device-wakeup-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
++		host-wakeup-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
++		shutdown-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_host_wake &bt_wake &bt_enable>;
++		vbat-supply = <&vcc3v3_sys>;
++		vddio-supply = <&vcc_1v8>;
++		/* vddio comes from regulator on module, use IO bank voltage instead */
++	};
++};
++
+ &uart2 {
+ 	status = "okay";
+ };
+@@ -841,6 +934,23 @@
+ };
+ 
+ &vop {
++	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
++	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
++	status = "okay";
++};
++
++&vop_mmu {
++	status = "okay";
++};
++
++&vp0 {
++	vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
++		reg = <ROCKCHIP_VOP2_EP_HDMI0>;
++		remote-endpoint = <&hdmi_in_vp0>;
++	};
++};
++
++&vop {
+ 	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
+ 	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
+ 	status = "okay";

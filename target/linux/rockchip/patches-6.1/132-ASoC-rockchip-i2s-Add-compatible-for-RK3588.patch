@@ -1,0 +1,28 @@
+From 29a1350b976a45c380eb40729b81b8e644f1e2e5 Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 15 Mar 2023 13:48:03 +0200
+Subject: [PATCH 132/134] ASoC: rockchip: i2s: Add compatible for RK3588
+
+The Rockchip I2S driver supports the RK3588/RK3588S SoCs, hence add the
+corresponding compatible string.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+---
+ sound/soc/rockchip/rockchip_i2s.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index a8758ad68442..2e24cc0570eb 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -659,6 +659,7 @@ static const struct of_device_id rockchip_i2s_match[] __maybe_unused = {
+ 	{ .compatible = "rockchip,rk3366-i2s", },
+ 	{ .compatible = "rockchip,rk3368-i2s", },
+ 	{ .compatible = "rockchip,rk3399-i2s", .data = &rk3399_i2s_pins },
++	{ .compatible = "rockchip,rk3588-i2s", },
+ 	{ .compatible = "rockchip,rv1126-i2s", },
+ 	{},
+ };
+-- 
+2.34.1
+

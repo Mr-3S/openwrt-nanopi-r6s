@@ -1,0 +1,35 @@
+From 222adf094cc74495c82c287be13bf0f4faecf94c Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 15 Mar 2023 13:48:00 +0200
+Subject: [PATCH 129/134] ASoC: dt-bindings: rockchip: i2s-tdm: Document audio
+ graph port
+
+Document the 'port' property to allow the Rockchip I2S TDM controller to
+be used in conjunction with the audio-graph-card.
+
+The property will be used to provide an endpoint for binding to the
+other side of the audio link.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+---
+ Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+index 6a7c004bef17..1a0330b97e7a 100644
+--- a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
++++ b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+@@ -82,6 +82,10 @@ properties:
+         - tx-m
+         - rx-m
+ 
++  port:
++    $ref: audio-graph-port.yaml#
++    unevaluatedProperties: false
++
+   rockchip,grf:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description:
+-- 
+2.34.1
+

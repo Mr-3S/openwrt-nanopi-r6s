@@ -1,0 +1,21 @@
+Index: linux-6.6.30/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
+===================================================================
+--- linux-6.6.30.orig/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
++++ linux-6.6.30/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
+@@ -15,6 +15,7 @@
+ 		ethernet0 = &gmac1;
+ 		mmc0 = &sdmmc;
+ 		mmc1 = &sdhci;
++		serial2 = &uart2;
+ 	};
+ 
+ 	chosen {
+@@ -408,6 +409,8 @@
+ 	sd-uhs-sdr104;
+ 	vmmc-supply = <&vcc_3v3_sd_s0>;
+ 	vqmmc-supply = <&vccio_sd_s0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc_det>;
+ 	status = "okay";
+ };
+ 

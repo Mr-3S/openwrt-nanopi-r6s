@@ -1,0 +1,45 @@
+From 5803b54068435be3a3254f9ecdc1ebd5c18718a8 Mon Sep 17 00:00:00 2001
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Date: Fri, 23 Feb 2024 14:11:22 +0100
+Subject: [PATCH] regulator: rk808: fix buck range on RK806
+
+The linear ranges aren't really matching what they should be. Indeed,
+the range is inclusive of the min value, so it makes sense the previous
+range does NOT include the max step value representing the min value of
+the range in question.
+
+Since 1.5V is represented by the decimal value 160, the previous range
+max step value should be 159 and not 160. Similarly, 3.4V is represented
+by the decimal value 236, so the previous range max value should be 235
+and not 237.
+
+The only change in behavior this makes is that this actually modeled
+the ranges to map step with decimal value 237 with 3.65V instead of
+3.4V (the max supported by the HW).
+
+Fixes: f991a220a447 ("regulator: rk808: add rk806 support")
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://msgid.link/r/20240223-rk806-regulator-ranges-v1-1-3904ab70d250@theobroma-systems.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/rk808-regulator.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/regulator/rk808-regulator.c b/drivers/regulator/rk808-regulator.c
+index e374fa6e5f2841..bfab5468cc54c3 100644
+--- a/drivers/regulator/rk808-regulator.c
++++ b/drivers/regulator/rk808-regulator.c
+@@ -1017,9 +1017,9 @@ static const struct regulator_desc rk805_reg[] = {
+ };
+ 
+ static const struct linear_range rk806_buck_voltage_ranges[] = {
+-	REGULATOR_LINEAR_RANGE(500000, 0, 160, 6250), /* 500mV ~ 1500mV */
+-	REGULATOR_LINEAR_RANGE(1500000, 161, 237, 25000), /* 1500mV ~ 3400mV */
+-	REGULATOR_LINEAR_RANGE(3400000, 238, 255, 0),
++	REGULATOR_LINEAR_RANGE(500000, 0, 159, 6250), /* 500mV ~ 1500mV */
++	REGULATOR_LINEAR_RANGE(1500000, 160, 235, 25000), /* 1500mV ~ 3400mV */
++	REGULATOR_LINEAR_RANGE(3400000, 236, 255, 0),
+ };
+ 
+ static const struct linear_range rk806_ldo_voltage_ranges[] = {

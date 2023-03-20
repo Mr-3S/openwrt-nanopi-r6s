@@ -20,6 +20,9 @@ rockchip_setup_interfaces()
 	friendlyarm,nanopi-r5s)
 		ucidef_set_interfaces_lan_wan 'eth1 eth2' 'eth0'
 		;;
+	friendlyarm,nanopi-r6s)
+		ucidef_set_interfaces_lan_wan 'eth0 eth2' 'eth1'
+		;;
 	*)
 		ucidef_set_interface_lan 'eth0'
 		;;
@@ -39,6 +42,27 @@ nanopi_r4s_get_mac()
 		fi
 	else
 		address=$(macaddr_generate_from_mmc_cid mmcblk1)
+		if [ "$interface" = "lan" ]; then
+			address=$(macaddr_add "$address" 1)
+		fi
+	fi
+
+	echo "$address"
+}
+
+nanopi_get_mac()
+{
+	local interface=$1
+	local eeprom_path="/sys/bus/i2c/devices/$2/eeprom"
+	local address
+
+	if [ -f "$eeprom_path" ]; then
+		address=$(get_mac_binary "$eeprom_path" 0xfa)
+		if [ "$interface" = "lan" ]; then
+			address=$(macaddr_setbit_la "$address")
+		fi
+	else
+		address=$(generate_mac_from_mmc_cid ${root_dev})
 		if [ "$interface" = "lan" ]; then
 			address=$(macaddr_add "$address" 1)
 		fi
@@ -75,6 +99,10 @@ rockchip_setup_macs()
 	xunlong,orangepi-r1-plus|\
 	xunlong,orangepi-r1-plus-lts)
 		wan_mac=$(macaddr_add "$(cat /sys/class/net/eth1/address)" -1)
+		;;
+	friendlyarm,nanopi-r6s)
+		wan_mac=$(nanopi_get_mac wan 6-0053)
+		lan_mac=$(nanopi_get_mac lan 6-0053)
 		;;
 	esac
 

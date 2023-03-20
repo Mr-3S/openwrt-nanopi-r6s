@@ -1,0 +1,33 @@
+From b3a379936335c7e6e2e6cc3188fe1e8bde222290 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Mon, 22 May 2023 19:03:24 +0200
+Subject: phy: phy-rockchip-inno-usb2: improve error message
+
+Printing the OF node is not useful, since we get the same information
+from the device context. Instead print the reg address, that could
+not be found.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20230522170324.61349-8-sebastian.reichel@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+index f5c30f117cbad..b982c3f0d4b56 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -1377,8 +1377,7 @@ static int rockchip_usb2phy_probe(struct platform_device *pdev)
+ 	} while (phy_cfgs[index].reg);
+ 
+ 	if (!rphy->phy_cfg) {
+-		dev_err(dev, "no phy-config can be matched with %pOFn node\n",
+-			np);
++		dev_err(dev, "could not find phy config for reg=0x%08x\n", reg);
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+cgit 1.2.3-korg
+

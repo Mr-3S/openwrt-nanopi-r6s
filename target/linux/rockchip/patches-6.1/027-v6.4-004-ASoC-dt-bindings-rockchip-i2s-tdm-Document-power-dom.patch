@@ -1,0 +1,30 @@
+From cc576e60c23d96f3a4753f3a5c34457ca2eaf838 Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 15 Mar 2023 13:48:01 +0200
+Subject: [PATCH 130/134] ASoC: dt-bindings: rockchip: i2s-tdm: Document
+ power-domains
+
+The binding document is missing the power-domains property. Add it.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+---
+ Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+index 1a0330b97e7a..b37e94374773 100644
+--- a/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
++++ b/Documentation/devicetree/bindings/sound/rockchip,i2s-tdm.yaml
+@@ -86,6 +86,9 @@ properties:
+     $ref: audio-graph-port.yaml#
+     unevaluatedProperties: false
+ 
++  power-domains:
++    maxItems: 1
++
+   rockchip,grf:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description:
+-- 
+2.34.1
+

@@ -1,0 +1,64 @@
+From 1a1d472cd67142f6d0041bef40f8a10c77f6c22d Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Sat, 4 Feb 2023 16:47:58 +0800
+Subject: [PATCH 141/144] drivers: phy: rockhip: remove 24M and 25M clock
+ handling for naneng combphy
+
+Although the combphy supports 24M and 25M clocks, they are not utilized
+at any upstream dts (RK3568) nor downstream vendor kernel (RK3568,
+RK3588S, RK3588).
+
+Another thing is, with those two clocks removed, it's easier to port the
+rk3588 combphy, as 3588 combphy needs to write into cfg->pipe_clk_24m
+for 24M clock case.
+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+---
+ .../phy/rockchip/phy-rockchip-naneng-combphy.c  | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c b/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
+index 7b213825fb5d..ae7083ae17a2 100644
+--- a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
++++ b/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
+@@ -94,7 +94,6 @@ struct rockchip_combphy_grfcfg {
+ 	struct combphy_reg pipe_rxterm_set;
+ 	struct combphy_reg pipe_txelec_set;
+ 	struct combphy_reg pipe_txcomp_set;
+-	struct combphy_reg pipe_clk_25m;
+ 	struct combphy_reg pipe_clk_100m;
+ 	struct combphy_reg pipe_phymode_sel;
+ 	struct combphy_reg pipe_rate_sel;
+@@ -454,21 +453,6 @@ static int rk3568_combphy_cfg(struct rockchip_combphy_priv *priv)
+ 	rate = clk_get_rate(priv->refclk);
+ 
+ 	switch (rate) {
+-	case REF_CLOCK_24MHz:
+-		if (priv->type == PHY_TYPE_USB3 || priv->type == PHY_TYPE_SATA) {
+-			/* Set ssc_cnt[9:0]=0101111101 & 31.5KHz. */
+-			val = PHYREG15_SSC_CNT_VALUE << PHYREG15_SSC_CNT_SHIFT;
+-			rockchip_combphy_updatel(priv, PHYREG15_SSC_CNT_MASK,
+-						 val, PHYREG15);
+-
+-			writel(PHYREG16_SSC_CNT_VALUE, priv->mmio + PHYREG16);
+-		}
+-		break;
+-
+-	case REF_CLOCK_25MHz:
+-		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_25m, true);
+-		break;
+-
+ 	case REF_CLOCK_100MHz:
+ 		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
+ 		if (priv->type == PHY_TYPE_PCIE) {
+@@ -530,7 +514,6 @@ static const struct rockchip_combphy_grfcfg rk3568_combphy_grfcfgs = {
+ 	.pipe_rxterm_set	= { 0x0000, 12, 12, 0x00, 0x01 },
+ 	.pipe_txelec_set	= { 0x0004, 1, 1, 0x00, 0x01 },
+ 	.pipe_txcomp_set	= { 0x0004, 4, 4, 0x00, 0x01 },
+-	.pipe_clk_25m		= { 0x0004, 14, 13, 0x00, 0x01 },
+ 	.pipe_clk_100m		= { 0x0004, 14, 13, 0x00, 0x02 },
+ 	.pipe_phymode_sel	= { 0x0008, 1, 1, 0x00, 0x01 },
+ 	.pipe_rate_sel		= { 0x0008, 2, 2, 0x00, 0x01 },
+-- 
+2.34.1
+

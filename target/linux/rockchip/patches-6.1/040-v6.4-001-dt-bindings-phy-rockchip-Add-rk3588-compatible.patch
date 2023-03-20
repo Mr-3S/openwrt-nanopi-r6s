@@ -1,0 +1,28 @@
+From c3becf9cd857606582eea7a5393dc29fb695f59c Mon Sep 17 00:00:00 2001
+From: Lucas Tanure <lucas.tanure@collabora.com>
+Date: Tue, 14 Mar 2023 13:55:54 +0000
+Subject: [PATCH] dt-bindings: phy: rockchip: Add rk3588 compatible
+
+RK3568 Naneng Combo Phy driver can support RK3588 with the additional
+clocks and initial configuration, so add the compatible line.
+
+Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20230314135555.44162-3-lucas.tanure@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ .../devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml     | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml b/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+index 8d8698412de012..9ae514fa753319 100644
+--- a/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
++++ b/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+@@ -13,6 +13,7 @@ properties:
+   compatible:
+     enum:
+       - rockchip,rk3568-naneng-combphy
++      - rockchip,rk3588-naneng-combphy
+ 
+   reg:
+     maxItems: 1

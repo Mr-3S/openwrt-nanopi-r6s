@@ -1,0 +1,150 @@
+From bd82857424d37897ad994381f7c580dacf2e2988 Mon Sep 17 00:00:00 2001
+From: Johan Hovold <johan+linaro@kernel.org>
+Date: Tue, 4 Apr 2023 09:25:23 +0200
+Subject: [PATCH] USB: dwc3: refactor clock lookups
+
+The probe callback has become unwieldy so break out the clock lookups
+into a new helper function to improve readability.
+
+Acked-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Link: https://lore.kernel.org/r/20230404072524.19014-11-johan+linaro@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/dwc3/core.c | 116 +++++++++++++++++++++-------------------
+ 1 file changed, 61 insertions(+), 55 deletions(-)
+
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index 16f6270eb9ff60..31dd9f21820ea7 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1704,6 +1704,64 @@ static struct extcon_dev *dwc3_get_extcon(struct dwc3 *dwc)
+ 	return edev;
+ }
+ 
++static int dwc3_get_clocks(struct dwc3 *dwc)
++{
++	struct device *dev = dwc->dev;
++
++	if (!dev->of_node)
++		return 0;
++
++	/*
++	 * Clocks are optional, but new DT platforms should support all clocks
++	 * as required by the DT-binding.
++	 * Some devices have different clock names in legacy device trees,
++	 * check for them to retain backwards compatibility.
++	 */
++	dwc->bus_clk = devm_clk_get_optional(dev, "bus_early");
++	if (IS_ERR(dwc->bus_clk)) {
++		return dev_err_probe(dev, PTR_ERR(dwc->bus_clk),
++				"could not get bus clock\n");
++	}
++
++	if (dwc->bus_clk == NULL) {
++		dwc->bus_clk = devm_clk_get_optional(dev, "bus_clk");
++		if (IS_ERR(dwc->bus_clk)) {
++			return dev_err_probe(dev, PTR_ERR(dwc->bus_clk),
++					"could not get bus clock\n");
++		}
++	}
++
++	dwc->ref_clk = devm_clk_get_optional(dev, "ref");
++	if (IS_ERR(dwc->ref_clk)) {
++		return dev_err_probe(dev, PTR_ERR(dwc->ref_clk),
++				"could not get ref clock\n");
++	}
++
++	if (dwc->ref_clk == NULL) {
++		dwc->ref_clk = devm_clk_get_optional(dev, "ref_clk");
++		if (IS_ERR(dwc->ref_clk)) {
++			return dev_err_probe(dev, PTR_ERR(dwc->ref_clk),
++					"could not get ref clock\n");
++		}
++	}
++
++	dwc->susp_clk = devm_clk_get_optional(dev, "suspend");
++	if (IS_ERR(dwc->susp_clk)) {
++		return dev_err_probe(dev, PTR_ERR(dwc->susp_clk),
++				"could not get suspend clock\n");
++	}
++
++	if (dwc->susp_clk == NULL) {
++		dwc->susp_clk = devm_clk_get_optional(dev, "suspend_clk");
++		if (IS_ERR(dwc->susp_clk)) {
++			return dev_err_probe(dev, PTR_ERR(dwc->susp_clk),
++					"could not get suspend clock\n");
++		}
++	}
++
++	return 0;
++}
++
+ static int dwc3_probe(struct platform_device *pdev)
+ {
+ 	struct device		*dev = &pdev->dev;
+@@ -1754,61 +1812,9 @@ static int dwc3_probe(struct platform_device *pdev)
+ 		goto err_put_psy;
+ 	}
+ 
+-	if (dev->of_node) {
+-		/*
+-		 * Clocks are optional, but new DT platforms should support all
+-		 * clocks as required by the DT-binding.
+-		 * Some devices have different clock names in legacy device trees,
+-		 * check for them to retain backwards compatibility.
+-		 */
+-		dwc->bus_clk = devm_clk_get_optional(dev, "bus_early");
+-		if (IS_ERR(dwc->bus_clk)) {
+-			ret = dev_err_probe(dev, PTR_ERR(dwc->bus_clk),
+-					    "could not get bus clock\n");
+-			goto err_put_psy;
+-		}
+-
+-		if (dwc->bus_clk == NULL) {
+-			dwc->bus_clk = devm_clk_get_optional(dev, "bus_clk");
+-			if (IS_ERR(dwc->bus_clk)) {
+-				ret = dev_err_probe(dev, PTR_ERR(dwc->bus_clk),
+-						    "could not get bus clock\n");
+-				goto err_put_psy;
+-			}
+-		}
+-
+-		dwc->ref_clk = devm_clk_get_optional(dev, "ref");
+-		if (IS_ERR(dwc->ref_clk)) {
+-			ret = dev_err_probe(dev, PTR_ERR(dwc->ref_clk),
+-					    "could not get ref clock\n");
+-			goto err_put_psy;
+-		}
+-
+-		if (dwc->ref_clk == NULL) {
+-			dwc->ref_clk = devm_clk_get_optional(dev, "ref_clk");
+-			if (IS_ERR(dwc->ref_clk)) {
+-				ret = dev_err_probe(dev, PTR_ERR(dwc->ref_clk),
+-						    "could not get ref clock\n");
+-				goto err_put_psy;
+-			}
+-		}
+-
+-		dwc->susp_clk = devm_clk_get_optional(dev, "suspend");
+-		if (IS_ERR(dwc->susp_clk)) {
+-			ret = dev_err_probe(dev, PTR_ERR(dwc->susp_clk),
+-					    "could not get suspend clock\n");
+-			goto err_put_psy;
+-		}
+-
+-		if (dwc->susp_clk == NULL) {
+-			dwc->susp_clk = devm_clk_get_optional(dev, "suspend_clk");
+-			if (IS_ERR(dwc->susp_clk)) {
+-				ret = dev_err_probe(dev, PTR_ERR(dwc->susp_clk),
+-						    "could not get suspend clock\n");
+-				goto err_put_psy;
+-			}
+-		}
+-	}
++	ret = dwc3_get_clocks(dwc);
++	if (ret)
++		goto err_put_psy;
+ 
+ 	ret = reset_control_deassert(dwc->reset);
+ 	if (ret)

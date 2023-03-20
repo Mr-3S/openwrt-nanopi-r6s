@@ -1,0 +1,127 @@
+From patchwork Thu May  4 17:36:15 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13231435
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 15AF1C77B78
+	for <linux-rockchip@archiver.kernel.org>;
+ Thu,  4 May 2023 17:36:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=/RmZlemI+iSJz5ESi+x95VYRFapGfJM64N4CwGf0aPE=; b=ZuWk3GnSwdwOhA
+	pgWhSoBVpl2gOJ0IpGRMK5WMQ3vsLEBPCjQKIdi3WGfZssR5NCWDV3k0Q0NW6SnqvFyyEMG3acSdv
+	r0Xr9PL9kLRrN6q88hZyDwmEQ2K0CjCjVMZyv9k/sUGGYJoQNRXekNo87xdJ3oAOcT1MaGClwgtY3
+	qfD0qDIZ+cAbFs1dSsQifadWgxHNdAs35X+2QK/h7EY5MZB3l8DJBxEU/jRbymBKLwmyhpxlNuKzK
+	OOH8hbPOSihw8tEQBaXUvX+LuEvu1NTjuAEDBVWSxqMpTC4lJhwItSXDbMyEjBkozDEd03mbMPgjP
+	ZL9H4pLQfUusPCDhqV8A==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucse-008R6h-2x;
+	Thu, 04 May 2023 17:36:36 +0000
+Received: from madras.collabora.co.uk ([2a00:1098:0:82:1000:25:2eeb:e5ab])
+	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsZ-008R17-0V
+	for linux-rockchip@lists.infradead.org;
+	Thu, 04 May 2023 17:36:33 +0000
+Received: from jupiter.universe (dyndsl-091-248-211-176.ewe-ip-backbone.de
+ [91.248.211.176])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 39637660570B;
+	Thu,  4 May 2023 18:36:25 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1683221785;
+	bh=BwNYqItpwXGrfyTuzvFjLuZMAbcaEb65/BiVmtlvYi4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=aTsA8AK3eGEWfqeH18T6FZiZiHOL0medzyJP/Tv4bkOh/AVPJ0U0GI/aZz7cN47Le
+	 W7tCVUa2Xae67KCPdkOqybNQlu0aykfhOr9fCOCvuG+GZISLNRmnWQJiHuqfRHhMhu
+	 QdZthpiOW8/sb9c3RhKnp98mMtWAPjYAWIIec0E8f6KwpiX7POVD+6V6/npmZXuuj7
+	 cBRaPq5xebLqB4cUUC2R99YLsk/tPk/VXrCof7DmgZVSKLnETLWDIr+7fKbMkRirMF
+	 LugpdT+C4sJi28x56xuX8sUEES74FqKEMdlZzfvWKtqLP9g/U5tlnMiaNOAnWh1Hnz
+	 oqkNKbo3aUG9A==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id E5FD04807F6; Thu,  4 May 2023 19:36:20 +0200 (CEST)
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Lee Jones <lee@kernel.org>
+Cc: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v8 11/14] regulator: rk808: fix asynchronous probing
+Date: Thu,  4 May 2023 19:36:15 +0200
+Message-Id: <20230504173618.142075-12-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+References: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20230504_103631_364563_14D04443 
+X-CRM114-Status: GOOD (  13.67  )
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+
+If the probe routine fails with -EPROBE_DEFER after taking over the
+OF node from its parent driver, reprobing triggers pinctrl_bind_pins()
+and that will fail. Fix this by setting of_node_reused, so that the
+device does not try to setup pin muxing.
+
+For me this always happens once the driver is marked to prefer async
+probing and never happens without that flag.
+
+Fixes: 259b93b21a9f ("regulator: Set PROBE_PREFER_ASYNCHRONOUS for drivers that existed in 4.14")
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/regulator/rk808-regulator.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/regulator/rk808-regulator.c b/drivers/regulator/rk808-regulator.c
+index 3637e81654a8..80ba782d8923 100644
+--- a/drivers/regulator/rk808-regulator.c
++++ b/drivers/regulator/rk808-regulator.c
+@@ -1336,6 +1336,7 @@ static int rk808_regulator_probe(struct platform_device *pdev)
+ 
+ 	config.dev = &pdev->dev;
+ 	config.dev->of_node = pdev->dev.parent->of_node;
++	config.dev->of_node_reused = true;
+ 	config.driver_data = pdata;
+ 	config.regmap = regmap;
+ 

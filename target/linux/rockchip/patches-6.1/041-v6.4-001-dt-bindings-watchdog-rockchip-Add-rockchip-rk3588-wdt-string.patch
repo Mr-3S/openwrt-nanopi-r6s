@@ -1,0 +1,30 @@
+From e1a234eb3d1507b942c25e5a5ae0d6fb9036f1ff Mon Sep 17 00:00:00 2001
+From: Shreeya Patel <shreeya.patel@collabora.com>
+Date: Wed, 29 Mar 2023 02:30:48 +0530
+Subject: [PATCH] dt-bindings: watchdog: rockchip: Add rockchip,rk3588-wdt
+ string
+
+Add rockchip,rk3588-wdt compatible string.
+
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20230328210048.195124-3-shreeya.patel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml b/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml
+index 92df6e453f64b6..e7a87ce94772cd 100644
+--- a/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml
++++ b/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml
+@@ -29,6 +29,7 @@ properties:
+               - rockchip,rk3368-wdt
+               - rockchip,rk3399-wdt
+               - rockchip,rk3568-wdt
++              - rockchip,rk3588-wdt
+               - rockchip,rv1108-wdt
+           - const: snps,dw-wdt
+ 

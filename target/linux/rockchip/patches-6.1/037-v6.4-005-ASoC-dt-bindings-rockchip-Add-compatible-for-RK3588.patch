@@ -1,0 +1,29 @@
+From d161da08049b69141edaa3db8fcbeb3f388b68eb Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 15 Mar 2023 13:48:02 +0200
+Subject: [PATCH 131/134] ASoC: dt-bindings: rockchip: Add compatible for
+ RK3588
+
+Add new compatible string for the Rockchip I2S/PCM controller found on
+RK3588 and RK3588S SoCs.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+---
+ Documentation/devicetree/bindings/sound/rockchip-i2s.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml b/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
+index 93beb3169ce5..555e978a89b5 100644
+--- a/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
++++ b/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
+@@ -31,6 +31,7 @@ properties:
+               - rockchip,rk3366-i2s
+               - rockchip,rk3368-i2s
+               - rockchip,rk3399-i2s
++              - rockchip,rk3588-i2s
+               - rockchip,rv1126-i2s
+           - const: rockchip,rk3066-i2s
+ 
+-- 
+2.34.1
+

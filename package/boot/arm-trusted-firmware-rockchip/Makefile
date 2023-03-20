@@ -69,4 +69,10 @@ define Package/trusted-firmware-a/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/build/$(PLAT)/release/bl31/bl31.elf $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)_bl31.elf
 endef
 
+define Build/InstallDev
+	$(INSTALL_DIR) -p $(STAGING_DIR_IMAGE)
+	$(CP) $(PKG_BUILD_DIR)/rk*.elf $(STAGING_DIR_IMAGE)/
+	$(CP) ./files/rk* $(STAGING_DIR_IMAGE)/
+endef
+
 $(eval $(call BuildPackage/Trusted-Firmware-A))

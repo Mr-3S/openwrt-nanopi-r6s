@@ -14,10 +14,10 @@ Subject: [PATCH 124/126] nanopi r6s initial
  create mode 100644 arch/arm/dts/rk3588-nanopi-r6s.dts
  create mode 100644 configs/nanopi-r6s-rk3588_defconfig
 
-diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index f854c09289..5be508a595 100644
---- a/arch/arm/dts/Makefile
-+++ b/arch/arm/dts/Makefile
+Index: u-boot-2023.07-rc1/arch/arm/dts/Makefile
+===================================================================
+--- u-boot-2023.07-rc1.orig/arch/arm/dts/Makefile
++++ u-boot-2023.07-rc1/arch/arm/dts/Makefile
 @@ -172,7 +172,8 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  dtb-$(CONFIG_ROCKCHIP_RK3588) += \
  	rk3588-edgeble-neu6a-io.dtb \
@@ -28,11 +28,10 @@ index f854c09289..5be508a595 100644
  
  dtb-$(CONFIG_ROCKCHIP_RV1108) += \
  	rv1108-elgin-r1.dtb \
-diff --git a/arch/arm/dts/rk3588-nanopi-r6s-u-boot.dtsi b/arch/arm/dts/rk3588-nanopi-r6s-u-boot.dtsi
-new file mode 100644
-index 0000000000..2386edf90d
+Index: u-boot-2023.07-rc1/arch/arm/dts/rk3588-nanopi-r6s-u-boot.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/dts/rk3588-nanopi-r6s-u-boot.dtsi
++++ u-boot-2023.07-rc1/arch/arm/dts/rk3588-nanopi-r6s-u-boot.dtsi
 @@ -0,0 +1,22 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
@@ -56,11 +55,10 @@ index 0000000000..2386edf90d
 +	u-boot,dm-spl;
 +	status = "okay";
 +};
-diff --git a/arch/arm/dts/rk3588-nanopi-r6s.dts b/arch/arm/dts/rk3588-nanopi-r6s.dts
-new file mode 100644
-index 0000000000..781b950010
+Index: u-boot-2023.07-rc1/arch/arm/dts/rk3588-nanopi-r6s.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/dts/rk3588-nanopi-r6s.dts
++++ u-boot-2023.07-rc1/arch/arm/dts/rk3588-nanopi-r6s.dts
 @@ -0,0 +1,44 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
@@ -106,10 +104,10 @@ index 0000000000..781b950010
 +	pinctrl-0 = <&uart2m0_xfer>;
 +	status = "okay";
 +};
-diff --git a/board/rockchip/evb_rk3588/MAINTAINERS b/board/rockchip/evb_rk3588/MAINTAINERS
-index 7b7df3c5a8..a3fe746b99 100644
---- a/board/rockchip/evb_rk3588/MAINTAINERS
-+++ b/board/rockchip/evb_rk3588/MAINTAINERS
+Index: u-boot-2023.07-rc1/board/rockchip/evb_rk3588/MAINTAINERS
+===================================================================
+--- u-boot-2023.07-rc1.orig/board/rockchip/evb_rk3588/MAINTAINERS
++++ u-boot-2023.07-rc1/board/rockchip/evb_rk3588/MAINTAINERS
 @@ -5,3 +5,9 @@ F:	board/rockchip/evb_rk3588
  F:	include/configs/evb_rk3588.h
  F:	configs/evb-rk3588_defconfig
@@ -120,12 +118,11 @@ index 7b7df3c5a8..a3fe746b99 100644
 +S:      Maintained
 +F:      configs/nanopi-r6s-rk3588_defconfig
 +F:      arch/arm/dts/rk3588-nanopi-r6s-u-boot.dtsi
-diff --git a/configs/nanopi-r6s-rk3588_defconfig b/configs/nanopi-r6s-rk3588_defconfig
-new file mode 100644
-index 0000000000..43db854c39
+Index: u-boot-2023.07-rc1/configs/nanopi-r6s-rk3588_defconfig
+===================================================================
 --- /dev/null
-+++ b/configs/nanopi-r6s-rk3588_defconfig
-@@ -0,0 +1,71 @@
++++ u-boot-2023.07-rc1/configs/nanopi-r6s-rk3588_defconfig
+@@ -0,0 +1,70 @@
 +CONFIG_ARM=y
 +CONFIG_SKIP_LOWLEVEL_INIT=y
 +CONFIG_COUNTER_FREQUENCY=24000000
@@ -152,8 +149,8 @@ index 0000000000..43db854c39
 +CONFIG_DEBUG_UART=y
 +CONFIG_FIT=y
 +CONFIG_FIT_VERBOSE=y
-+CONFIG_SPL_FIT_SIGNATURE=y
 +CONFIG_SPL_LOAD_FIT=y
++CONFIG_OF_BOARD_SETUP=y
 +CONFIG_DEFAULT_FDT_FILE="rockchip/rk3588-nanopi-r6s.dtb"
 +# CONFIG_DISPLAY_CPUINFO is not set
 +CONFIG_DISPLAY_BOARDINFO_LATE=y
@@ -191,12 +188,8 @@ index 0000000000..43db854c39
 +CONFIG_REGULATOR_PWM=y
 +CONFIG_PWM_ROCKCHIP=y
 +CONFIG_SPL_RAM=y
-+CONFIG_BAUDRATE=115200
++CONFIG_BAUDRATE=1500000
 +CONFIG_DEBUG_UART_SHIFT=2
 +CONFIG_DEBUG_UART_ANNOUNCE=y
 +CONFIG_SYSRESET=y
-+# CONFIG_BINMAN_FDT is not set
 +CONFIG_ERRNO_STR=y
--- 
-2.34.1
-

@@ -1,8 +1,7 @@
-From 3cc34cd4bb8f6c279f1d8ca590edec9e0b6f99c6 Mon Sep 17 00:00:00 2001
+From a03c4427725301328ccbe414d0a19ad39e90d008 Mon Sep 17 00:00:00 2001
 From: Lucas Tanure <lucas.tanure@collabora.com>
-Date: Fri, 10 Mar 2023 08:05:15 +0000
-Subject: [PATCH 154/156] phy: rockchip: Add naneng combo phy support for
- RK3588
+Date: Tue, 14 Mar 2023 13:55:55 +0000
+Subject: [PATCH] phy: rockchip: Add naneng combo phy support for RK3588
 
 Add support for RK3588 combo phy
 
@@ -12,14 +11,16 @@ Peter Geis fixing this issue specifically for Rockchip 356x.
 Co-developed-by: Andrew Powers-Holmes <aholmes@omnom.net>
 Signed-off-by: Andrew Powers-Holmes <aholmes@omnom.net>
 Signed-off-by: Lucas Tanure <lucas.tanure@collabora.com>
+Link: https://lore.kernel.org/r/20230314135555.44162-4-lucas.tanure@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  .../rockchip/phy-rockchip-naneng-combphy.c    | 184 ++++++++++++++++++
  1 file changed, 184 insertions(+)
 
-Index: linux-6.1/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
-===================================================================
---- linux-6.1.orig/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
-+++ linux-6.1/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
+diff --git a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c b/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
+index 7b213825fb5d51..7b8b001e4f9e37 100644
+--- a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
++++ b/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
 @@ -63,6 +63,9 @@
  #define PHYREG18			0x44
  #define PHYREG18_PLL_LOOP		0x32
@@ -30,7 +31,7 @@ Index: linux-6.1/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
  #define PHYREG32			0x7C
  #define PHYREG32_SSC_MASK		GENMASK(7, 4)
  #define PHYREG32_SSC_DIR_SHIFT		4
-@@ -113,7 +116,10 @@ struct rockchip_combphy_grfcfg {
+@@ -114,7 +117,10 @@ struct rockchip_combphy_grfcfg {
  	struct combphy_reg con2_for_sata;
  	struct combphy_reg con3_for_sata;
  	struct combphy_reg pipe_con0_for_sata;
@@ -41,7 +42,7 @@ Index: linux-6.1/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
  };
  
  struct rockchip_combphy_cfg {
-@@ -542,11 +548,184 @@ static const struct rockchip_combphy_cfg
+@@ -559,11 +565,189 @@ static const struct rockchip_combphy_cfg rk3568_combphy_cfgs = {
  	.combphy_cfg	= rk3568_combphy_cfg,
  };
  
@@ -131,6 +132,10 @@ Index: linux-6.1/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
 +			writel(PHYREG16_SSC_CNT_VALUE, priv->mmio + PHYREG16);
 +		}
 +		break;
++
++	case REF_CLOCK_25MHz:
++		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_25m, true);
++		break;
 +	case REF_CLOCK_100MHz:
 +		rockchip_combphy_param_write(priv->phy_grf, &cfg->pipe_clk_100m, true);
 +		if (priv->type == PHY_TYPE_PCIE) {
@@ -188,6 +193,7 @@ Index: linux-6.1/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c
 +	.pipe_rxterm_set	= { 0x0000, 12, 12, 0x00, 0x01 },
 +	.pipe_txelec_set	= { 0x0004, 1, 1, 0x00, 0x01 },
 +	.pipe_txcomp_set	= { 0x0004, 4, 4, 0x00, 0x01 },
++	.pipe_clk_25m		= { 0x0004, 14, 13, 0x00, 0x01 },
 +	.pipe_clk_100m		= { 0x0004, 14, 13, 0x00, 0x02 },
 +	.pipe_rxterm_sel	= { 0x0008, 8, 8, 0x00, 0x01 },
 +	.pipe_txelec_sel	= { 0x0008, 12, 12, 0x00, 0x01 },

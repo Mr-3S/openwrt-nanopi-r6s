@@ -5,10 +5,10 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2023.04
+PKG_VERSION:=2023.07-rc1
 PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_HASH:=e31cac91545ff41b71cec5d8c22afd695645cd6e2a442ccdacacd60534069341
+PKG_HASH:=22ebea8c8b2a4f999c82164c5227e0c774c4fa7ac84f63a356137f5a3e913ac1
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
@@ -79,7 +79,7 @@ define U-Boot/nanopi-r6s-rk3588
   DEPENDS:=+PACKAGE_u-boot-nanopi-r6s-rk3588:arm-trusted-firmware-rockchip
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3588_bl31.elf
-  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
+  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
 endef
 
 
@@ -119,6 +119,13 @@ ifneq ($(OF_PLATDATA),)
 endif
 
 #	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
+endef
+
+# use host dtc
+define Build/Compile
+	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
+		CROSS_COMPILE=$(TARGET_CROSS) \
+		$(UBOOT_MAKE_FLAGS)
 endef
 
 define Build/InstallDev

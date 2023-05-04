@@ -79,7 +79,7 @@ define U-Boot/nanopi-r6s-rk3588
   DEPENDS:=+PACKAGE_u-boot-nanopi-r6s-rk3588:arm-trusted-firmware-rockchip
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
   ATF:=rk3588_bl31.elf
-  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
+  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
 endef
 
 

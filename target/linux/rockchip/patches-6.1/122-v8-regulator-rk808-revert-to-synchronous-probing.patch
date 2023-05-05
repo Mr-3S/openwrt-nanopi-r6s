@@ -1,0 +1,137 @@
+From patchwork Thu May  4 17:36:17 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13231445
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DCA6EC7EE30
+	for <linux-rockchip@archiver.kernel.org>;
+ Thu,  4 May 2023 17:36:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=IvyZey2ofw7n6+L1aYcBiT8/UnyVxSZN/ieHndN3jPQ=; b=R18ynXNaQZaOOr
+	VZGgDX54Q2qPQAgL+IPFl/J9pLcH1nId3+edY/OqjErHfaya8bMytAdjJQhubyV+Rn7MwVQI2g9Xe
+	GOeX0O0IqbUGexaE6GlHI4uL3vwrd38ZxkXp8trN7IFNbc4EJzLMvjfjvkKY026OX2Uo0wq2PKD8x
+	rif3JIX0xvoIVpbVBSRhrNONN9keRbN4SaGitKnc7XnWKuGfFtnyGzcmnMK8liOPWrSlmNmQYbsPN
+	302sjBUU36r1+MMm7udQEmQcSFiGmZda4X+cD+9ZvJ7rvODs/hORh/SLV2/FpwBeNTQR2lwZjbm43
+	h00QE3A3XEeKGQzIt/3g==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsj-008RCl-2a;
+	Thu, 04 May 2023 17:36:41 +0000
+Received: from madras.collabora.co.uk ([2a00:1098:0:82:1000:25:2eeb:e5ab])
+	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
+	id 1pucsZ-008R1j-2k
+	for linux-rockchip@lists.infradead.org;
+	Thu, 04 May 2023 17:36:36 +0000
+Received: from jupiter.universe (dyndsl-091-248-211-176.ewe-ip-backbone.de
+ [91.248.211.176])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 48F26660570D;
+	Thu,  4 May 2023 18:36:25 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1683221785;
+	bh=167nUJPaQ51u5ho/2UstluOaEMM5LZNNdaUekQZ3nm0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=hE7MELyWsFw50ZH/pbcqiRhR9nqa0PzAzepuew6iOnT1wTluYjjpMPH/s30DLORDL
+	 +kdy6ZHgjjzO7EYRWUI6tPeQTtvloWCqc2m4nzQQ7F2fKxram61eQn/I0Bz9PznF0c
+	 UFYD69HFsnD3PZFQLOHVNqHBpFozTiQDdsqUMCwy74PYfDB+JoJXrdCUuuQTBU5yUI
+	 XmdFBDI+vnH8PTF0SrqgWttS1xFWihZ8iA5ALDmrQNrUVBxoV3uWW6M1IF1xPElkct
+	 HrrCeNzP18LuI6UEYaSushXULi8L25aQHfjTXRdguq74wae3BAoxxahUkYrRC/3n7y
+	 sSeJEpF8SbQ0A==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id E89194807F8; Thu,  4 May 2023 19:36:20 +0200 (CEST)
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Lee Jones <lee@kernel.org>
+Cc: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v8 13/14] regulator: rk808: revert to synchronous probing
+Date: Thu,  4 May 2023 19:36:17 +0200
+Message-Id: <20230504173618.142075-14-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+References: <20230504173618.142075-1-sebastian.reichel@collabora.com>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20230504_103632_083147_60A0F5E0 
+X-CRM114-Status: GOOD (  17.75  )
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+
+The rk808 driver registers a bunch of regulator devices in a loop.
+If one of the later regulators fails to register (usually because
+its input supply is not yet available) everything will be unrolled
+(i.e. previously registered regulators will be unregistered). With
+asynchronous registration there might already be consumers, though.
+We do not have the necessary infrastructure to properly unregister
+the consumer device, so this scenario should be avoided.
+
+First checking all input supplies or disallowing usage of the regulators
+until all are registered does not work, since there can be
+self-references (e.g. DCDC channels providing the supply of LDOs).
+
+The only sensible solution I found is registering the regulator devices
+asynchronously, so that we do not have to unroll. Since this is a major
+rework let's revert back to synchronous probing for now to fix the issue
+at hand.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/regulator/rk808-regulator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-6.1/drivers/regulator/rk808-regulator.c
+===================================================================
+--- linux-6.1.orig/drivers/regulator/rk808-regulator.c
++++ linux-6.1/drivers/regulator/rk808-regulator.c
+@@ -1354,7 +1354,8 @@ static int rk808_regulator_probe(struct
+ static struct platform_driver rk808_regulator_driver = {
+ 	.probe = rk808_regulator_probe,
+ 	.driver = {
+-		.name = "rk808-regulator"
++		.name = "rk808-regulator",
++		.probe_type = PROBE_FORCE_SYNCHRONOUS,
+ 	},
+ };
+ 

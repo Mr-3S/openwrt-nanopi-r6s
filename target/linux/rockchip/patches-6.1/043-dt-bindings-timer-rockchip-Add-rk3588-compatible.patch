@@ -1,0 +1,28 @@
+From e2a1406c84c43bd104e2f85c4d8ab0b0b1609ab0 Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Wed, 19 Apr 2023 21:13:08 +0300
+Subject: [PATCH] dt-bindings: timer: rockchip: Add rk3588 compatible
+
+Add compatible string for Rockchip RK3588 timer.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Link: https://lore.kernel.org/r/20230419181309.338354-3-cristian.ciocaltea@collabora.com
+---
+ Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml b/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml
+index 2bdb6e6bdb2150..19e56b7577a08b 100644
+--- a/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml
+@@ -24,6 +24,7 @@ properties:
+               - rockchip,rk3228-timer
+               - rockchip,rk3229-timer
+               - rockchip,rk3368-timer
++              - rockchip,rk3588-timer
+               - rockchip,px30-timer
+           - const: rockchip,rk3288-timer
+   reg:

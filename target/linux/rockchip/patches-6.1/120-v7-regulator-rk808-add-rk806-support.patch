@@ -1,107 +1,7 @@
-From patchwork Thu May  4 17:36:18 2023
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
-X-Patchwork-Id: 13231444
-Return-Path: 
- <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C3C07C7EE2C
-	for <linux-rockchip@archiver.kernel.org>;
- Thu,  4 May 2023 17:36:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=k/lL+EyR+G9+8iXBeWlFbKqjAdK0c3Wp43OBCL/kj4o=; b=k0itpbVL8jpxtc
-	45jrEzCKH/7HFrMvGWxSEYTaJNi1DL1cy/jKTFBLz7YMDiL0RlVwTteDlnDzJgMewVmtfyRqYqcgy
-	EoMGUqmmG6FFcEXTiwUIxod2V8BdtXgt3bD8WL+vcoeGhGstHoetJAORFhAUc8aOiWAqi1KOwKP20
-	TcQNOxZKouocRDkcQfEehLP1wz1KrbgUEwvsk2YJYa7y0VBhWBOtZRUlyz+/42BxO4MnNPOCXOvbj
-	1Q2yPLDSOX3Xx1dnDd45YI5sgRk1uYFKQEXYmCSmsdj+9bWgM6jzFFp4+cTPbPl9Rb1cDPQFWhrmJ
-	9SvkQUVquCGt7yttWSIw==;
-Received: from localhost ([::1] helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
-	id 1pucsl-008REf-0H;
-	Thu, 04 May 2023 17:36:43 +0000
-Received: from madras.collabora.co.uk ([46.235.227.172])
-	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
-	id 1pucsZ-008R1i-2p
-	for linux-rockchip@lists.infradead.org;
-	Thu, 04 May 2023 17:36:38 +0000
-Received: from jupiter.universe (dyndsl-091-248-211-176.ewe-ip-backbone.de
- [91.248.211.176])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: sre)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 5335E660570E;
-	Thu,  4 May 2023 18:36:25 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1683221785;
-	bh=60Y7YTh22DAGVb71vPmtJ4P/GVSH6Pe6RA0eO+OtKtg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=DwtaiMCPmVhILnffAQPc2cwgkVYnY+wFGAT0f22SxUC1mJEs05a6Ol5cFpA/PEGs+
-	 2DI/1723JK/pyCYN54DBL8VtA+GcvMSV4qtg4mPLtTTqFfySVAlQ0wyuMPfx6CpTqZ
-	 WVxwNzHpaWSOnBwHEZ73/v+Ym9UZh3DvBYauly36r+FtEgoKkVvXuDhQlZiB0ZRN6y
-	 yuD8rkagtThCMISJCr2kKzevpugpyV4Hig0sIALXNQ+xrrHTSkFZGaoZ/dWu/Nfocm
-	 xwlBCSG8uOw9pNaVEhGTwEOgSis2GO7vq2jaEbCHCykUsh/L04q0Mxbww7CBmhdA81
-	 9FFMg05byjNFg==
-Received: by jupiter.universe (Postfix, from userid 1000)
-	id EA1214807F9; Thu,  4 May 2023 19:36:20 +0200 (CEST)
+From b9bf87cd04c75b6f20779715723ee565d0b0563d Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko Stuebner <heiko@sntech.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Lee Jones <lee@kernel.org>
-Cc: Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Mark Brown <broonie@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com,
-	shengfei Xu <xsf@rock-chips.com>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Diederik de Haas <didi.debian@cknow.org>,
-	Vincent Legoll <vincent.legoll@gmail.com>
-Subject: [PATCH v8 14/14] regulator: rk808: add rk806 support
-Date: Thu,  4 May 2023 19:36:18 +0200
-Message-Id: <20230504173618.142075-15-sebastian.reichel@collabora.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230504173618.142075-1-sebastian.reichel@collabora.com>
-References: <20230504173618.142075-1-sebastian.reichel@collabora.com>
-MIME-Version: 1.0
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20230504_103632_192269_1110B1B7 
-X-CRM114-Status: GOOD (  21.39  )
-X-BeenThere: linux-rockchip@lists.infradead.org
-X-Mailman-Version: 2.1.34
-Precedence: list
-List-Id: Upstream kernel work for Rockchip platforms
- <linux-rockchip.lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip@lists.infradead.org>
-List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
-Errors-To: 
- linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
+Date: Tue, 7 Mar 2023 16:36:17 +0100
+Subject: [PATCH 120/120] regulator: rk808: add rk806 support
 
 Add rk806 support to the existing rk808 regulator
 driver.
@@ -109,18 +9,16 @@ driver.
 This has been implemented using shengfei Xu's rk806
 specific driver from the vendor tree as reference.
 
-Co-developed-by: shengfei Xu <xsf@rock-chips.com>
+Co-Developed-by: shengfei Xu <xsf@rock-chips.com>
 Signed-off-by: shengfei Xu <xsf@rock-chips.com>
 Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
-Tested-by: Diederik de Haas <didi.debian@cknow.org> # Rock64, Quartz64 Model A + B
-Tested-by: Vincent Legoll <vincent.legoll@gmail.com> # Pine64 QuartzPro64
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- drivers/regulator/rk808-regulator.c | 385 ++++++++++++++++++++++++++++
- 1 file changed, 385 insertions(+)
+ drivers/regulator/rk808-regulator.c | 383 ++++++++++++++++++++++++++++
+ 1 file changed, 383 insertions(+)
 
 diff --git a/drivers/regulator/rk808-regulator.c b/drivers/regulator/rk808-regulator.c
-index 5f14d6dd4593..460525ed006c 100644
+index 127dc2e2e690..65cb539b3df4 100644
 --- a/drivers/regulator/rk808-regulator.c
 +++ b/drivers/regulator/rk808-regulator.c
 @@ -3,9 +3,11 @@
@@ -135,7 +33,7 @@ index 5f14d6dd4593..460525ed006c 100644
   *
   * Copyright (C) 2016 PHYTEC Messtechnik GmbH
   *
-@@ -39,6 +41,13 @@
+@@ -40,6 +42,13 @@
  #define RK818_LDO3_ON_VSEL_MASK		0xf
  #define RK818_BOOST_ON_VSEL_MASK	0xe0
  
@@ -149,7 +47,7 @@ index 5f14d6dd4593..460525ed006c 100644
  /* Ramp rate definitions for buck1 / buck2 only */
  #define RK808_RAMP_RATE_OFFSET		3
  #define RK808_RAMP_RATE_MASK		(3 << RK808_RAMP_RATE_OFFSET)
-@@ -117,6 +126,34 @@
+@@ -118,6 +127,34 @@
  	RK8XX_DESC_COM(_id, _match, _supply, _min, _max, _step, _vreg,	\
  	_vmask, _ereg, _emask, 0, 0, _etime, &rk805_reg_ops)
  
@@ -184,7 +82,7 @@ index 5f14d6dd4593..460525ed006c 100644
  #define RK8XX_DESC(_id, _match, _supply, _min, _max, _step, _vreg,	\
  	_vmask, _ereg, _emask, _etime)					\
  	RK8XX_DESC_COM(_id, _match, _supply, _min, _max, _step, _vreg,	\
-@@ -153,6 +190,17 @@
+@@ -154,6 +191,17 @@
  	RKXX_DESC_SWITCH_COM(_id, _match, _supply, _ereg, _emask,	\
  	0, 0, &rk808_switch_ops)
  
@@ -202,7 +100,7 @@ index 5f14d6dd4593..460525ed006c 100644
  struct rk808_regulator_data {
  	struct gpio_desc *dvs_gpio[2];
  };
-@@ -216,6 +264,133 @@ static const unsigned int rk817_buck1_4_ramp_table[] = {
+@@ -217,6 +265,133 @@ static const unsigned int rk817_buck1_4_ramp_table[] = {
  	3000, 6300, 12500, 25000
  };
  
@@ -336,7 +234,7 @@ index 5f14d6dd4593..460525ed006c 100644
  static int rk808_buck1_2_get_voltage_sel_regmap(struct regulator_dev *rdev)
  {
  	struct rk808_regulator_data *pdata = rdev_get_drvdata(rdev);
-@@ -393,6 +568,47 @@ static int rk805_set_suspend_disable(struct regulator_dev *rdev)
+@@ -394,6 +569,45 @@ static int rk805_set_suspend_disable(struct regulator_dev *rdev)
  				  0);
  }
  
@@ -367,7 +265,6 @@ index 5f14d6dd4593..460525ed006c 100644
 +static int rk806_set_suspend_enable(struct regulator_dev *rdev)
 +{
 +	int rid = rdev_get_id(rdev);
-+
 +	return regmap_update_bits(rdev->regmap, rk806_suspend_bits[rid].reg,
 +				  rk806_suspend_bits[rid].bit,
 +				  rk806_suspend_bits[rid].bit);
@@ -376,7 +273,6 @@ index 5f14d6dd4593..460525ed006c 100644
 +static int rk806_set_suspend_disable(struct regulator_dev *rdev)
 +{
 +	int rid = rdev_get_id(rdev);
-+
 +	return regmap_update_bits(rdev->regmap, rk806_suspend_bits[rid].reg,
 +				  rk806_suspend_bits[rid].bit, 0);
 +}
@@ -384,7 +280,7 @@ index 5f14d6dd4593..460525ed006c 100644
  static int rk808_set_suspend_enable(struct regulator_dev *rdev)
  {
  	unsigned int reg;
-@@ -561,6 +777,64 @@ static const struct regulator_ops rk805_switch_ops = {
+@@ -562,6 +776,64 @@ static const struct regulator_ops rk805_switch_ops = {
  	.set_suspend_disable    = rk805_set_suspend_disable,
  };
  
@@ -449,7 +345,7 @@ index 5f14d6dd4593..460525ed006c 100644
  static const struct regulator_ops rk808_buck1_2_ops = {
  	.list_voltage		= regulator_list_voltage_linear,
  	.map_voltage		= regulator_map_voltage_linear,
-@@ -743,6 +1017,112 @@ static const struct regulator_desc rk805_reg[] = {
+@@ -744,6 +1016,112 @@ static const struct regulator_desc rk805_reg[] = {
  		BIT(2), 400),
  };
  
@@ -562,7 +458,7 @@ index 5f14d6dd4593..460525ed006c 100644
  static const struct regulator_desc rk808_reg[] = {
  	{
  		.name = "DCDC_REG1",
-@@ -1313,6 +1693,10 @@ static int rk808_regulator_probe(struct platform_device *pdev)
+@@ -1309,6 +1687,10 @@ static int rk808_regulator_probe(struct platform_device *pdev)
  		regulators = rk805_reg;
  		nregulators = RK805_NUM_REGULATORS;
  		break;
@@ -573,10 +469,13 @@ index 5f14d6dd4593..460525ed006c 100644
  	case RK808_ID:
  		regulators = rk808_reg;
  		nregulators = RK808_NUM_REGULATORS;
-@@ -1366,5 +1750,6 @@ MODULE_AUTHOR("Tony xie <tony.xie@rock-chips.com>");
+@@ -1363,5 +1745,6 @@ MODULE_AUTHOR("Tony xie <tony.xie@rock-chips.com>");
  MODULE_AUTHOR("Chris Zhong <zyw@rock-chips.com>");
  MODULE_AUTHOR("Zhang Qing <zhangqing@rock-chips.com>");
  MODULE_AUTHOR("Wadim Egorov <w.egorov@phytec.de>");
 +MODULE_AUTHOR("Xu Shengfei <xsf@rock-chips.com>");
  MODULE_LICENSE("GPL");
  MODULE_ALIAS("platform:rk808-regulator");
+-- 
+2.34.1
+

@@ -24,7 +24,7 @@ Index: linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 ===================================================================
 --- /dev/null
 +++ linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
-@@ -0,0 +1,206 @@
+@@ -0,0 +1,251 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -125,6 +125,18 @@ Index: linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +		startup-delay-us = <5000>;
 +		vin-supply = <&vcc_3v3_s3>;
 +	};
++
++	vcc_3v3_pcie20: vcc3v3-pcie20 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_3v3_pcie20";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc_3v3_s3>;
++	};
++
++
 +};
 +
 +&gmac1 {
@@ -207,7 +219,7 @@ Index: linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +};
 +
 +&sdmmc {
-+	max-frequency = <200000000>;
++	max-frequency = <150000000>;
 +	no-sdio;
 +	no-mmc;
 +	bus-width = <4>;
@@ -215,7 +227,7 @@ Index: linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +	cap-sd-highspeed;
 +	disable-wp;
 +	sd-uhs-sdr104;
-+	vmmc-supply = <&vcc_3v3_s3>;
++	vmmc-supply = <&vcc_3v3_sd_s0>;
 +	vqmmc-supply = <&vccio_sd_s0>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc_det>;
@@ -226,8 +238,41 @@ Index: linux-6.1/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +	status = "okay";
 +};
 +
-+&pcie2x1l2 {
-+	reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
-+	vpcie3v3-supply = <&vcc3v3_pcie2x1l2>;
++&combphy2_psu {
 +	status = "okay";
 +};
++
++
++&pcie2x1l1 {
++	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
++	rockchip,init-delay-ms = <100>;
++	vpcie3v3-supply = <&vcc_3v3_pcie20>;
++	status = "okay";
++	pcie@30 {
++		reg = <0x00300000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		r8125_u25: pcie@30,0 {
++			reg = <0x000000 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
++};
++
++&pcie2x1l2 {
++	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc_3v3_pcie20>;
++	status = "okay";
++	pcie@40 {
++		reg = <0x00400000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		r8125_u40: pcie@40,0 {
++			reg = <0x000000 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
++};
++

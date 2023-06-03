@@ -211,6 +211,13 @@ UBOOT_MAKE_FLAGS += \
 # #	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
 # endef
 
+# use host dtc
+define Build/Compile
+	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
+		CROSS_COMPILE=$(TARGET_CROSS) \
+		$(UBOOT_MAKE_FLAGS)
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 	$(CP) $(PKG_BUILD_DIR)/idbloader.img $(STAGING_DIR_IMAGE)/$(BUILD_VARIANT)-idbloader.img

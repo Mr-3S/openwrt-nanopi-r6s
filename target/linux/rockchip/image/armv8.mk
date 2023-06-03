@@ -114,7 +114,9 @@ define Device/friendlyarm_nanopi-r6s
   DEVICE_VARIANT := 8GB LPDDR4
   SOC := rk3588s
   UBOOT_DEVICE_NAME := nanopi-r6s-rk3588
+  IMAGES := sysupgrade.img.gz sysupgrade.img
   IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
+  IMAGE/sysupgrade.img := boot-common | boot-script nanopi-r6s | pine64-img
   DEVICE_PACKAGES := kmod-r8169
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r6s

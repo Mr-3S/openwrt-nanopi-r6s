@@ -24,12 +24,14 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 ===================================================================
 --- /dev/null
 +++ linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
-@@ -0,0 +1,291 @@
+@@ -0,0 +1,471 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
 +
 +#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
 +#include <dt-bindings/pinctrl/rockchip.h>
 +#include "rk3588s.dtsi"
 +#include "rk3588-rk806-single.dtsi"
@@ -37,11 +39,12 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +
 +/ {
 +	model = "FriendlyElec NanoPi R6S";
-+	compatible = "friendlyarm,nanopi-r6s", "rockchip,rk3588s";
++	compatible = "friendlyarm,nanopi-r6s", "rockchip,rk3588";
 +
 +	aliases {
 +		mmc0 = &sdmmc;
 +		mmc1 = &sdhci;
++		ethernet0 = &gmac1;
 +		serial2 = &uart2;
 +	};
 +
@@ -52,31 +55,31 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +	gpio_leds: gpio-leds {
 +		compatible = "gpio-leds";
 +
-+		sys_led: led-0 {
++		sys_led: led-sys {
 +			gpios = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>;
-+			label = "sys_led";
++			label = "red:sys";
 +			linux,default-trigger = "heartbeat";
 +			pinctrl-names = "default";
 +			pinctrl-0 = <&sys_led_pin>;
 +		};
 +
-+		wan_led: led-1 {
++		wan_led: led-wan {
 +			gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
-+			label = "wan_led";
++			label = "green:wan";
 +			pinctrl-names = "default";
 +			pinctrl-0 = <&wan_led_pin>;
 +		};
 +
-+		lan1_led: led-2 {
++		lan_led: led-lan {
 +			gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_HIGH>;
-+			label = "lan1_led";
++			label = "green:lan";
 +			pinctrl-names = "default";
 +			pinctrl-0 = <&lan1_led_pin>;
 +		};
 +
-+		lan2_led: led-3 {
++		lan2_led: led-lan2 {
 +			gpios = <&gpio1 RK_PC4 GPIO_ACTIVE_HIGH>;
-+			label = "lan2_led";
++			label = "green:lan1";
 +			pinctrl-names = "default";
 +			pinctrl-0 = <&lan2_led_pin>;
 +		};
@@ -91,6 +94,15 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +		regulator-max-microvolt = <5000000>;
 +	};
 +
++	vcc5v0_usb: vcc5v0-usb {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_usb";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
 +
 +	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3 {
 +		compatible = "regulator-fixed";
@@ -116,16 +128,6 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +		vin-supply = <&vcc_3v3_s3>;
 +	};
 +
-+
-+	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc3v3_pcie2x1l2";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		startup-delay-us = <5000>;
-+		vin-supply = <&vcc_3v3_s3>;
-+	};
-+
 +	vcc_3v3_pcie20: vcc3v3-pcie20 {
 +		compatible = "regulator-fixed";
 +		regulator-name = "vcc_3v3_pcie20";
@@ -136,9 +138,134 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +		vin-supply = <&vcc_3v3_s3>;
 +	};
 +
++	vbus5v0_typec: vbus5v0-typec {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&typec5v_pwren>;
++		regulator-name = "vbus5v0_typec";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usb>;
++	};
++
++	vcc5v0_host_20: vcc5v0-host-20 {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_host20_en>;
++		regulator-name = "vcc5v0_host_20";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usb>;
++	};
++
++	gpio_keys: gpio-keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&key1_pin>;
++	};
++
++	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_pcie2x1l2";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <5000>;
++		vin-supply = <&vcc_3v3_s3>;
++	};
++
 +
 +};
++/*
++&cpu_l0 {
++	cpu-supply = <&vdd_cpu_lit_s0>;
++	mem-supply = <&vdd_cpu_lit_mem_s0>;
++};
 +
++&cpu_b0 {
++	cpu-supply = <&vdd_cpu_big0_s0>;
++	mem-supply = <&vdd_cpu_big0_mem_s0>;
++};
++
++&cpu_b2 {
++	cpu-supply = <&vdd_cpu_big1_s0>;
++	mem-supply = <&vdd_cpu_big1_mem_s0>;
++};
++*/
++&i2c0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c0m2_xfer>;
++	status = "okay";
++
++	vdd_cpu_big0_s0: vdd_cpu_big0_mem_s0: regulator@42 {
++		compatible = "rockchip,rk8602";
++		reg = <0x42>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-name = "vdd_cpu_big0_s0";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <550000>;
++		regulator-max-microvolt = <1050000>;
++		regulator-ramp-delay = <2300>;
++		vin-supply = <&vcc5v0_sys>;
++
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++
++	vdd_cpu_big1_s0: vdd_cpu_big1_mem_s0: regulator@43 {
++		compatible = "rockchip,rk8603", "rockchip,rk8602";
++		reg = <0x43>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-name = "vdd_cpu_big1_s0";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <550000>;
++		regulator-max-microvolt = <1050000>;
++		regulator-ramp-delay = <2300>;
++		vin-supply = <&vcc5v0_sys>;
++
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++};
++
++&i2c6 {
++	status = "okay";
++	clock-frequency = <200000>;
++	pinctrl-0 = <&i2c6m0_xfer>;
++
++	eeprom@53 {
++		compatible = "microchip,24c02", "atmel,24c02";
++		reg = <0x53>;
++		#address-cells = <2>;
++		#size-cells = <0>;
++		pagesize = <16>;
++		size = <256>;
++
++		eui_48: eui-48@fa {
++			reg = <0xfa 0x06>;
++		};
++	};
++
++	hym8563: hym8563@51 {
++		compatible = "haoyu,hym8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++		clock-frequency = <32768>;
++		clock-output-names = "hym8563";
++		pinctrl-names = "default";
++		pinctrl-0 = <&rtc_int>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
++		wakeup-source;
++	};
++};
 +&gmac1 {
 +	clock_in_out = "output";
 +	phy-handle = <&rgmii_phy1>;
@@ -167,6 +294,12 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +};
 +
 +&pinctrl {
++	gpio-key {
++		key1_pin: key1-pin {
++			rockchip,pins = <1 RK_PC0 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
 +	gpio-leds {
 +		sys_led_pin: sys-led-pin {
 +			rockchip,pins =
@@ -194,6 +327,21 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +			rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
++	usb {
++		vcc5v0_host20_en: vcc5v0-host20-en {
++			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++		typec5v_pwren: typec5v-pwren {
++			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		/omit-if-no-ref/
++		usbc0_int: usbc0-int {
++			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++
++	};
++	
 +
 +	hym8563 {
 +		rtc_int: rtc-int {
@@ -207,6 +355,12 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +		};
 +	};
 +};
++
++/*
++&saradc {
++	status = "okay";
++};
++*/
 +
 +&sdhci {
 +	bus-width = <8>;
@@ -232,7 +386,9 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +	cap-mmc-highspeed;
 +	cap-sd-highspeed;
 +	disable-wp;
-+	sd-uhs-sdr104;
++/*	sd-uhs-sdr104;
++unstable?
++*/
 +	vmmc-supply = <&vcc_3v3_sd_s0>;
 +	vqmmc-supply = <&vccio_sd_s0>;
 +	pinctrl-names = "default";
@@ -248,7 +404,66 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +	status = "okay";
 +};
 +
++&tsadc {
++	status = "okay";
++};
 +
++/*
++&u2phy2 {
++	status = "okay";
++};
++
++&u2phy3 {
++	status = "okay";
++};
++
++&u2phy2_host {
++	phy-supply = <&vcc5v0_host_20>;
++	status = "okay";
++};
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usb_host1_ehci {
++	status = "okay";
++};
++
++&usb_host1_ohci {
++	status = "okay";
++};
++
++&u2phy0 {
++	status = "okay";
++};
++
++&usbdp_phy0 {
++	status = "okay";
++};
++
++&u2phy0_otg {
++	phy-supply = <&vbus5v0_typec>;
++	status = "okay";
++};
++
++&usbdp_phy0_u3 {
++	status = "okay";
++};
++
++&usbdrd3_0 {
++	status = "okay";
++};
++&usbdrd_dwc3_0 {
++	dr_mode = "otg";
++	extcon = <&u2phy0>;
++	status = "okay";
++};
++*/
 +&pcie2x1l1 {
 +	reset-gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_HIGH>;
 +	rockchip,init-delay-ms = <100>;
@@ -280,39 +495,4 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +			local-mac-address = [ 00 00 00 00 00 00 ];
 +		};
 +	};
-+};
-+
-+
-+&i2c6 {
-+	clock-frequency = <200000>;
-+	status = "okay";
-+	pinctrl-0 = <&i2c6m0_xfer>;
-+
-+	eeprom@53 {
-+		compatible = "microchip,24c02", "atmel,24c02";
-+		reg = <0x53>;
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+		pagesize = <16>;
-+		size = <256>;
-+
-+		eui_48: eui-48@fa {
-+			reg = <0xfa 0x06>;
-+		};
-+	};
-+
-+	hym8563: hym8563@51 {
-+		compatible = "haoyu,hym8563";
-+		reg = <0x51>;
-+		#clock-cells = <0>;
-+		clock-frequency = <32768>;
-+		clock-output-names = "hym8563";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rtc_int>;
-+
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
-+		wakeup-source;
-+	};
-+
 +};

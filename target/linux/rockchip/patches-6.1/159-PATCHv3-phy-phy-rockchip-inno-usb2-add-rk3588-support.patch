@@ -1,7 +1,99 @@
-From d3879b574368509df97383ca86df700ef3be91b6 Mon Sep 17 00:00:00 2001
+From patchwork Mon May 22 17:03:19 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Sebastian Reichel <sebastian.reichel@collabora.com>
+X-Patchwork-Id: 13250881
+Return-Path: 
+ <linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4F98C77B73
+	for <linux-rockchip@archiver.kernel.org>;
+ Mon, 22 May 2023 17:04:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=p912uCbyUGK+QciZiY9Atit/G3LoOYHpEwgMltrVQbM=; b=mwOCq6eY4QHaMy
+	dNqNK2eJxksDjUa6GTn1AVVZ2JlZCPcYisiDc0WX7H7PgVKq95uC5TrPZN/blfh2/uDtnMII4t5+s
+	POyfaNVwYEDG0vY9G2t3BEdS0dyjUD61w5dk3Yq5gytzH59LlzCm4LzHvhS13IpAbfCRHd4B9f5dY
+	gGJCMlLgJO0f8hfgCFb3mz/lojaHF+r38qwu6Zg2yGKhrodQMxBMmaFSCs3GB8GfmMVl8vURVBkTZ
+	VB3O/ChAAmuMzNHTjvGRWAl1MIr81/6GVpziYD0gWloxYJgvOaol2Avv6m7e1RmfzvXZyp6uOgAdL
+	0e8mgANH08lNjlCN9DOQ==;
+Received: from localhost ([::1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.96 #2 (Red Hat Linux))
+	id 1q18xF-007IaW-10;
+	Mon, 22 May 2023 17:04:17 +0000
+Received: from madras.collabora.co.uk ([46.235.227.172])
+	by bombadil.infradead.org with esmtps (Exim 4.96 #2 (Red Hat Linux))
+	id 1q18wl-007IHd-1z;
+	Mon, 22 May 2023 17:03:51 +0000
+Received: from jupiter.universe (dyndsl-091-248-208-162.ewe-ip-backbone.de
+ [91.248.208.162])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id DDDDB6606E66;
+	Mon, 22 May 2023 18:03:42 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1684775023;
+	bh=qvhXp2yyvb606B46qr/uSDeu+IWOleW7ERcOlbRxkco=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=bUx4pctmb0IcHfBR7qiOhvoWgvVRFwTvXtL5neDQJwasT2hDTX9TyoOC2JMiKbAha
+	 FSdhay4iPBIP2TB5b5URbVbxgxlD5XXAzKxDbUB/gqTbzz18XTcH6xlkcCDuQtWS+i
+	 C3LXeaQGPs9rtaQiXpf4yArV9yOe6WPnYIdbxW7w3+lW0PTdJVnUQtqc5A4cVNCv60
+	 X8vagK8QfnhIHGawbkMT2v0Os7lMfv11H+JoSdH1A7CZpmAc19EQWZnKgQFnYVq8ME
+	 5IXkZwRS+07XHnGjGbVjYCNptx80hq/f6MXUXZLAhfNJKq8DGPQHhRJLpO9Z2locn4
+	 w6vJUQ4iR+xzA==
+Received: by jupiter.universe (Postfix, from userid 1000)
+	id 7AF044807E1; Mon, 22 May 2023 19:03:40 +0200 (CEST)
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Mon, 3 Apr 2023 22:23:03 +0200
-Subject: [PATCHv2 159/163] phy: phy-rockchip-inno-usb2: add rk3588 support
+To: Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+	linux-phy@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com,
+	William Wu <william.wu@rock-chips.com>
+Subject: [PATCH v3 2/7] phy: phy-rockchip-inno-usb2: add rk3588 support
+Date: Mon, 22 May 2023 19:03:19 +0200
+Message-Id: <20230522170324.61349-3-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230522170324.61349-1-sebastian.reichel@collabora.com>
+References: <20230522170324.61349-1-sebastian.reichel@collabora.com>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20230522_100347_919273_2ECD0863 
+X-CRM114-Status: GOOD (  24.79  )
+X-BeenThere: linux-rockchip@lists.infradead.org
+X-Mailman-Version: 2.1.34
+Precedence: list
+List-Id: Upstream kernel work for Rockchip platforms
+ <linux-rockchip.lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip@lists.infradead.org>
+List-Help: <mailto:linux-rockchip-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request@lists.infradead.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces@lists.infradead.org>
+Errors-To: 
+ linux-rockchip-bounces+linux-rockchip=archiver.kernel.org@lists.infradead.org
 
 Add basic support for the USB2 PHY found in the Rockchip RK3588.
 
@@ -9,11 +101,11 @@ Co-developed-by: William Wu <william.wu@rock-chips.com>
 Signed-off-by: William Wu <william.wu@rock-chips.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 224 ++++++++++++++++--
- 1 file changed, 210 insertions(+), 14 deletions(-)
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 226 ++++++++++++++++--
+ 1 file changed, 211 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-index a0bc10aa7961..b75712bd20c9 100644
+index a0bc10aa7961..2c4683c67a8e 100644
 --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
 +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
 @@ -116,6 +116,12 @@ struct rockchip_chg_det_reg {
@@ -192,6 +284,15 @@ index a0bc10aa7961..b75712bd20c9 100644
  		switch (rport->port_id) {
  		case USB2PHY_PORT_OTG:
  			if (rport->mode != USB_DR_MODE_HOST &&
+@@ -1233,7 +1312,7 @@ static int rockchip_usb2phy_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* support address_cells=2 */
+-	if (reg == 0) {
++	if (of_property_count_u32_elems(np, "reg") > 2 && reg == 0) {
+ 		if (of_property_read_u32_index(np, "reg", 1, &reg)) {
+ 			dev_err(dev, "the reg property is not assigned in %pOFn node\n",
+ 				np);
 @@ -1254,14 +1333,14 @@ static int rockchip_usb2phy_probe(struct platform_device *pdev)
  
  	/* find out a proper config which can be matched with dt. */
@@ -340,6 +441,3 @@ index a0bc10aa7961..b75712bd20c9 100644
  	{ .compatible = "rockchip,rv1108-usb2phy", .data = &rv1108_phy_cfgs },
  	{}
  };
--- 
-2.34.1
-

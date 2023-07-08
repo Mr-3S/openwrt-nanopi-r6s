@@ -39,7 +39,7 @@ Index: linux-6.1.31/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6s.dts
 +
 +/ {
 +	model = "FriendlyElec NanoPi R6S";
-+	compatible = "friendlyarm,nanopi-r6s", "rockchip,rk3588";
++	compatible = "friendlyarm,nanopi-r6s", "rockchip,rk3588s";
 +
 +	aliases {
 +		mmc0 = &sdmmc;

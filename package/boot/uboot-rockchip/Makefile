@@ -103,10 +103,10 @@ define U-Boot/nanopi-r6s-rk3588
   NAME:=NanoPi R6S
   BUILD_DEVICES:= \
     friendlyarm_nanopi-r6s
-  DEPENDS:=+PACKAGE_u-boot-nanopi-r6s-rk3588:arm-trusted-firmware-rockchip
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3588
   PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip
-  ATF:=rk3588_bl31.elf
-  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
+  ATF:=rk3588_bl31_v1.38.elf
+  ROCKCHIP_TPL:=rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
 endef
 
 

@@ -33,8 +33,8 @@ endef
 
 define Trusted-Firmware-A/rk3588
   BUILD_SUBTARGET:=armv8
-  ATF:=rk35/rk3588_bl31_v1.38.elf
-  TPL:=rk35/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.11.bin
+  ATF:=rk35/rk3588_bl31_v1.40.elf
+  TPL:=rk35/rk3588_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
 endef
 
 TFA_TARGETS:= \

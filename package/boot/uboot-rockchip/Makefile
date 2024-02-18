@@ -183,33 +183,11 @@ UBOOT_MAKE_FLAGS += \
   PATH=$(STAGING_DIR_HOST)/bin:$(PATH) \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
   $(if $(TPL),ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(TPL))
-#  BL31=$(STAGING_DIR_IMAGE)/$(ATF)
-# ifneq ($(ROCKCHIP_TPL),)
-#  UBOOT_MAKE_FLAGS += \
-#    ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(ROCKCHIP_TPL)
-#  UBOOT_CONFIGURE_VARS += \
-#    ROCKCHIP_TPL=$(STAGING_DIR_IMAGE)/$(ROCKCHIP_TPL)
-  UBOOT_MAKE_FLAGS += \
-    ARCH=arm
-  UBOOT_CONFIGURE_VARS += \
-    ARCH=arm
-# endif
 
-
-# define Build/Configure
-# 	$(call Build/Configure/U-Boot)
-
-# ifneq ($(OF_PLATDATA),)
-# 	mkdir -p $(PKG_BUILD_DIR)/tpl/dts
-# 	mkdir -p $(PKG_BUILD_DIR)/include/generated
-
-# 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-plat.c $(PKG_BUILD_DIR)/tpl/dts/dt-plat.c
-# 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-structs-gen.h $(PKG_BUILD_DIR)/include/generated/dt-structs-gen.h
-# 	$(CP) $(PKG_BUILD_DIR)/of-platdata/$(OF_PLATDATA)/dt-decl.h $(PKG_BUILD_DIR)/include/generated/dt-decl.h
-# endif
-
-# #	$(SED) 's#CONFIG_MKIMAGE_DTC_PATH=.*#CONFIG_MKIMAGE_DTC_PATH="$(PKG_BUILD_DIR)/scripts/dtc/dtc"#g' $(PKG_BUILD_DIR)/.config
-# endef
+UBOOT_MAKE_FLAGS += \
+  ARCH=arm
+UBOOT_CONFIGURE_VARS += \
+  ARCH=arm
 
 # use host dtc
 define Build/Compile

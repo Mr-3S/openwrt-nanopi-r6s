@@ -1,0 +1,45 @@
+From 2eaa5e73f51ff5abce18d58f6d0635880df1b8d0 Mon Sep 17 00:00:00 2001
+From: Muhammed Efe Cetin <efectn@protonmail.com>
+Date: Sat, 30 Dec 2023 14:17:59 +0300
+Subject: dt-bindings: arm: rockchip: Add NanoPi R6 series boards
+
+Add support for NanoPi R6 series boards that based on RK3588S.
+
+NanoPi R6S basically has:
+- USB3
+- USB2
+- eMMC
+- 2x 2.5GBe & 1x 1GBe ethernet
+- HDMI
+- SD card support
+
+Unlike R6S variant, NanoPi R6C has PCIe M.2 M-key instead of 1x 2.5GBe.
+
+Signed-off-by: Muhammed Efe Cetin <efectn@protonmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/30c1c7eac02cd32b76edb77572523f6ad8de89fb.1703934548.git.efectn@protonmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ Documentation/devicetree/bindings/arm/rockchip.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+Index: linux-6.1.69/Documentation/devicetree/bindings/arm/rockchip.yaml
+===================================================================
+--- linux-6.1.69.orig/Documentation/devicetree/bindings/arm/rockchip.yaml
++++ linux-6.1.69/Documentation/devicetree/bindings/arm/rockchip.yaml
+@@ -164,7 +164,14 @@ properties:
+               - friendlyarm,nanopi-r4s-enterprise
+           - const: rockchip,rk3399
+ 
+-      - description: GeekBuying GeekBox
++      - description: FriendlyElec NanoPi R6 series boards
++        items:
++          - enum:
++              - friendlyarm,nanopi-r6c
++              - friendlyarm,nanopi-r6s
++          - const: rockchip,rk3588s
++
++     - description: GeekBuying GeekBox
+         items:
+           - const: geekbuying,geekbox
+           - const: rockchip,rk3368
